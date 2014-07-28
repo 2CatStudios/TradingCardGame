@@ -8,4 +8,29 @@
         <ipaddress>71.63.239.44</ipaddress>
         <port>52531</port>
 	</Server>
+    
+    <Server featured='true'>
+        <name>Dummy Server 1</name>
+        <host>2Cat Studios</host>
+        <description>A dumb server for testing purposes only.</description>
+        <ipaddress>192.168.1.1</ipaddress>
+        <port>65535</port>
+    </Server>
+    
+    <Server featured='true'>
+        <name>Dummy Server 2</name>
+        <host>2Cat Studios</host>
+        <description>Remember, dumb spelled backwards is mud.</description>
+        <ipaddress>192.168.1.1</ipaddress>
+        <port>65535</port>
+    </Server>
+    
+    <Server featured='true'>
+        <name>Dummy Server 3</name>
+        <host>2Cat Studios</host>
+        <description>Three's a charm.'</description>
+        <ipaddress>192.168.1.1</ipaddress>
+        <port>65535</port>
+    </Server>
+
 </Servers>

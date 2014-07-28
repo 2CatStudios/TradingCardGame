@@ -4,12 +4,19 @@ using System.Collections;
 public class UserInterface : MonoBehaviour
 {
 	
+	ExternalInformation externalInformation;
+	
 	public GUISkin guiskin;
 	internal Rect homePaneRect;
 	Rect controlWindowRect;
 	
 	GUIStyle labelLargeStyle;
+	GUIStyle labelMediumStyle;
 	GUIStyle labelSmallStyle;
+	GUIStyle buttonLargeStyle;
+	GUIStyle buttonMediumStyle;
+	GUIStyle buttonSmallStyle;
+	GUIStyle textFieldStyle;
 	GUIStyle windowStyle;
 	
 	bool host = false;
@@ -18,20 +25,78 @@ public class UserInterface : MonoBehaviour
 	bool fadeIN = false;
 	bool fadeOUT = false;
 	
+	string directIP = "192.168.1.1";
+	string directName = "Server Name (optional)";
+	string directPort = "52531";
+	
+	Vector2 scrollView;
+	
 	Color guicolor;
 	
 	
 	void Start ()
 	{
+		
+		externalInformation = GameObject.FindGameObjectWithTag ( "Manager" ).GetComponent<ExternalInformation>();
 	
 		homePaneRect = new Rect ( 0, 0, Screen.width, Screen.height );
 		controlWindowRect = new Rect ( 14, 204, 772, 360 );
 		
 		labelLargeStyle = new GUIStyle ();
 		labelLargeStyle.fontSize = 48;
+		labelLargeStyle.padding = new RectOffset ( 0, 0, 3, 3 );
+		labelLargeStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		
+		labelMediumStyle = new GUIStyle ();
+		labelMediumStyle.fontSize = 24;
+		labelMediumStyle.padding = new RectOffset ( 0, 0, 3, 3 );
+		labelMediumStyle.margin = new RectOffset ( 4, 4, 4, 4 );
 		
 		labelSmallStyle = new GUIStyle ();
-		labelSmallStyle.fontSize = 24;
+		labelSmallStyle.fontSize = 16;
+		labelSmallStyle.padding = new RectOffset ( 0, 0, 3, 3 );
+		labelSmallStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		
+		
+		buttonLargeStyle = new GUIStyle ();
+		buttonLargeStyle.fontSize = 48;
+		buttonLargeStyle.alignment = TextAnchor.MiddleCenter;
+		buttonLargeStyle.normal.background = guiskin.button.normal.background;
+		buttonLargeStyle.hover.background = guiskin.button.hover.background;
+		buttonLargeStyle.active.background = guiskin.button.active.background;
+		buttonLargeStyle.border = new RectOffset ( 6, 6, 6, 4 );
+		buttonLargeStyle.padding = new RectOffset ( 6, 6, 3, 3 );
+		buttonLargeStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		
+		buttonMediumStyle = new GUIStyle ();
+		buttonMediumStyle.fontSize = 24;
+		buttonMediumStyle.alignment = TextAnchor.MiddleCenter;
+		buttonMediumStyle.normal.background = guiskin.button.normal.background;
+		buttonMediumStyle.hover.background = guiskin.button.hover.background;
+		buttonMediumStyle.active.background = guiskin.button.active.background;
+		buttonMediumStyle.border = new RectOffset ( 6, 6, 6, 4 );
+		buttonMediumStyle.padding = new RectOffset ( 6, 6, 3, 3 );
+		buttonMediumStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		
+		buttonSmallStyle = new GUIStyle ();
+		buttonSmallStyle.fontSize = 16;
+		buttonSmallStyle.alignment = TextAnchor.MiddleCenter;
+		buttonSmallStyle.normal.background = guiskin.button.normal.background;
+		buttonSmallStyle.hover.background = guiskin.button.hover.background;
+		buttonSmallStyle.active.background = guiskin.button.active.background;
+		buttonSmallStyle.border = new RectOffset ( 6, 6, 6, 4 );
+		buttonSmallStyle.padding = new RectOffset ( 6, 6, 3, 3 );
+		buttonSmallStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		
+		
+		textFieldStyle = new GUIStyle ();
+		textFieldStyle.font = guiskin.font;
+		textFieldStyle.font.material.color = Color.black;
+		textFieldStyle.border = new RectOffset ( 4, 4, 4, 4 );
+		textFieldStyle.padding = new RectOffset ( 3, 3, 3, 3 );
+		textFieldStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		textFieldStyle.normal.background = guiskin.textField.normal.background;
+		textFieldStyle.hover.background = guiskin.textField.hover.background;
 		
 		windowStyle = new GUIStyle ();
 		windowStyle.border = new RectOffset ( 6, 6, 6, 4 );
@@ -79,55 +144,50 @@ public class UserInterface : MonoBehaviour
 	{
 		
 		GUI.skin = guiskin;
-		GUI.Window ( 0, homePaneRect, HomePane, "" );
-	}
-
-
-	void HomePane ( int windowID )
-	{
 		
+#region BaseMenu
+		
+		GUILayout.BeginArea ( homePaneRect );
 		GUILayout.BeginVertical ();
+		GUILayout.Space ( 5 );
 		GUILayout.BeginHorizontal ();
 		
 		GUILayout.FlexibleSpace ();
-		GUILayout.Label ( "Multiplayer Game", labelLargeStyle );
+		GUILayout.Label ( "Tradingcard Game", labelLargeStyle );
 		GUILayout.FlexibleSpace ();
 		
 		GUILayout.EndHorizontal ();
 		GUILayout.BeginHorizontal ();
 		
 		GUILayout.FlexibleSpace ();
-		GUILayout.Label ( "Subtitle goes here", labelSmallStyle );
+		GUILayout.Label ( "Because OSX 10.10 Doesn't Run Games", labelMediumStyle );
 		GUILayout.FlexibleSpace ();
 		
 		GUILayout.EndHorizontal ();
-		
 		GUILayout.Space ( 50 );
-		
 		GUILayout.BeginHorizontal ();
-		
 		GUILayout.FlexibleSpace ();
 		
-		if ( GUILayout.Button ( "Host", GUILayout.Width ( 350 )))
+		if ( GUILayout.Button ( "Host", buttonLargeStyle, GUILayout.Width ( 350 )))
 		{
 			
-			if ( host == true )
+			if ( host == false )
 			{
-				
-				fadeOUT = true;
-			} else {
 				
 				host = true;
 				connect = false;
 				fadeIN = true;
+				GUI.FocusWindow ( 1 );
+			} else {
+				
+				fadeOUT = true;
+				fadeIN = false;
 			}
-			
-			UnityEngine.Debug.Log ( "Host" );
 		}
 		
 		GUILayout.FlexibleSpace ();
 		
-		if ( GUILayout.Button ( "Connect", GUILayout.Width ( 350 )))
+		if ( GUILayout.Button ( "Connect", buttonLargeStyle, GUILayout.Width ( 350 )))
 		{
 			
 			if ( connect == false )
@@ -136,18 +196,23 @@ public class UserInterface : MonoBehaviour
 				connect = true;
 				host = false;
 				fadeIN = true;
+				GUI.FocusWindow ( 2 );
 			} else {
 		
 				fadeOUT = true;
+				fadeIN = false;
 			}
-			
-			UnityEngine.Debug.Log ( "Connect" );
 		}
 		
 		GUILayout.FlexibleSpace ();
 		
 		GUILayout.EndHorizontal ();
-		GUILayout.BeginHorizontal ();
+		GUILayout.EndVertical ();
+		GUILayout.EndArea ();
+		
+#endregion
+#region Windows
+		
 		GUI.color = guicolor;
 		
 		if ( host == true )
@@ -164,8 +229,8 @@ public class UserInterface : MonoBehaviour
 		
 		GUI.color = Color.white;
 		
-		GUILayout.EndHorizontal ();
-		GUILayout.EndVertical ();
+#endregion
+		
 	}
 	
 	
@@ -177,10 +242,7 @@ public class UserInterface : MonoBehaviour
 		GUILayout.BeginHorizontal ();
 		GUILayout.Space ( 5 );
 		
-		GUILayout.Label ( "Host", labelSmallStyle );
-		
-		GUILayout.EndHorizontal ();
-		GUILayout.BeginHorizontal ();
+		GUILayout.Label ( "Hosting Window", labelLargeStyle );
 		
 		GUILayout.EndHorizontal ();
 		GUILayout.EndVertical ();
@@ -189,18 +251,53 @@ public class UserInterface : MonoBehaviour
 	
 	void ConnectingWindow ( int windowID )
 	{
-
+		
+		scrollView = GUILayout.BeginScrollView ( scrollView, GUILayout.Width ( controlWindowRect.width ), GUILayout.Height ( controlWindowRect.height ));
+		
 		GUILayout.BeginVertical ();
 		GUILayout.Space ( 5 );
+		
 		GUILayout.BeginHorizontal ();
-		GUILayout.Space ( 5 );
-		
-		GUILayout.Label ( "Connect", labelSmallStyle );
-		
+		GUILayout.Label ( "Direct Connection", labelLargeStyle );
 		GUILayout.EndHorizontal ();
+		
 		GUILayout.BeginHorizontal ();
-		
+		GUILayout.Label ( "Connect to: ", labelMediumStyle );
+		directIP = GUILayout.TextField ( directIP, 22, textFieldStyle, GUILayout.MinWidth ( 120 ));
+		GUILayout.FlexibleSpace ();
+		directPort = GUILayout.TextField ( directPort, 5, textFieldStyle, GUILayout.MinWidth ( 50 ));
+		GUILayout.FlexibleSpace ();
+		directName = GUILayout.TextField ( directName, 22, textFieldStyle, GUILayout.MinWidth ( 120 ));
+		GUILayout.FlexibleSpace ();
+		if ( GUILayout.Button ( "Save IP", buttonSmallStyle ))
+		{
+			
+			
+		}
+		//GUILayout.FlexibleSpace ();
+		if ( GUILayout.Button ( "Connect", buttonSmallStyle ))
+		{
+			
+			
+		}
+		GUILayout.FlexibleSpace ();
 		GUILayout.EndHorizontal ();
+		
+		GUILayout.BeginHorizontal ();
+		GUILayout.Box ( "" );
+		GUILayout.EndHorizontal ();
+		
+		GUILayout.BeginHorizontal ();
+		GUILayout.Label ( "Official Servers", labelLargeStyle );
+		GUILayout.EndHorizontal ();
+		
+		foreach ( Server server in externalInformation.officalServerList.officialServers )
+		{
+			
+			GUILayout.Button ( server.name, buttonSmallStyle );
+		}
+		
 		GUILayout.EndVertical ();
+		GUILayout.EndScrollView ();
 	}
 }
