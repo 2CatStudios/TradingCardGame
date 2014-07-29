@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?> 
 
-<Servers>
+<OfficialServers>
 	<Server featured='true'>
 		<name>2Cat Studios' Server</name>
         <host>2Cat Studios</host>

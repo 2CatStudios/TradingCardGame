@@ -177,6 +177,7 @@ public class UserInterface : MonoBehaviour
 				host = true;
 				connect = false;
 				fadeIN = true;
+				GUI.FocusControl ( "" );
 				GUI.FocusWindow ( 1 );
 			} else {
 				
@@ -196,6 +197,7 @@ public class UserInterface : MonoBehaviour
 				connect = true;
 				host = false;
 				fadeIN = true;
+				GUI.FocusControl ( "" );
 				GUI.FocusWindow ( 2 );
 			} else {
 		
@@ -231,6 +233,7 @@ public class UserInterface : MonoBehaviour
 		
 #endregion
 		
+		GUI.SetNextControlName ( "" );	
 	}
 	
 	
@@ -269,12 +272,12 @@ public class UserInterface : MonoBehaviour
 		GUILayout.FlexibleSpace ();
 		directName = GUILayout.TextField ( directName, 22, textFieldStyle, GUILayout.MinWidth ( 120 ));
 		GUILayout.FlexibleSpace ();
-		if ( GUILayout.Button ( "Save IP", buttonSmallStyle ))
+		if ( GUILayout.Button ( "Save Server", buttonSmallStyle ))
 		{
 			
-			
+			externalInformation.SaveServer ( directIP, directPort, directName );
 		}
-		//GUILayout.FlexibleSpace ();
+		GUILayout.FlexibleSpace ();
 		if ( GUILayout.Button ( "Connect", buttonSmallStyle ))
 		{
 			
@@ -282,20 +285,23 @@ public class UserInterface : MonoBehaviour
 		}
 		GUILayout.FlexibleSpace ();
 		GUILayout.EndHorizontal ();
+
 		
-		GUILayout.BeginHorizontal ();
-		GUILayout.Box ( "" );
-		GUILayout.EndHorizontal ();
+		GUILayout.Space ( 40 );
 		
 		GUILayout.BeginHorizontal ();
 		GUILayout.Label ( "Official Servers", labelLargeStyle );
 		GUILayout.EndHorizontal ();
 		
-		foreach ( Server server in externalInformation.officalServerList.officialServers )
+		foreach ( OfficialServer server in externalInformation.officialServerList.officialServers )
 		{
 			
-			GUILayout.Button ( server.name, buttonSmallStyle );
+			GUILayout.Button ( server.name, buttonMediumStyle );
 		}
+		
+		GUILayout.Space ( 40 );
+		
+		GUILayout.Label ( "Saved Servers", labelLargeStyle );
 		
 		GUILayout.EndVertical ();
 		GUILayout.EndScrollView ();
