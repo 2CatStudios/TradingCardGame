@@ -9,11 +9,11 @@ using System.Xml.Serialization;
 using System.Collections.Generic;
 //Written by Michael Bethke
 
-[XmlRoot("OfficialServers")]
+[XmlRoot ( "OfficialServers" )]
 public class OfficialServerList
 {
 	
-	[XmlElement("Server")]
+	[XmlElement ( "OfficialServer" )]
 	public OfficialServer[] officialServers;
 }
 
@@ -30,11 +30,11 @@ public class OfficialServer
 	public string port;
 }
 
-[XmlRoot("SavedServers")]
+[XmlRoot ( "SavedServers" )]
 public class SavedServerList
 {
 	
-	[XmlElement("Server")]
+	[XmlElement ( "SavedServer" )]
 	public SavedServer[] savedServers;
 }
 
@@ -157,14 +157,9 @@ public class ExternalInformation : MonoBehaviour
 		
 		serverList.Add ( serverToAdd );
 		
-		XmlSerializer serializer = new XmlSerializer ( typeof ( SavedServerList ) );
+		XmlSerializer serializer = new XmlSerializer ( savedServerList.GetType ());
 		StreamWriter writer = new StreamWriter ( supportPath + "SavedServers.xml" );
 		serializer.Serialize ( writer.BaseStream, serverList );
-		
-		/*System.Xml.Serialization.XmlSerializer writer = new System.Xml.Serialization.XmlSerializer ( typeof ( Book ));
-		System.IO.StreamWriter file = new System.IO.StreamWriter ( @"c:\temp\SerializationOverview.xml" );
-		writer.Serialize ( file, overview );
-		file.Close();*/
 		
 		UnityEngine.Debug.Log ( "Saved without fault" );
 	}
