@@ -26,7 +26,7 @@ public class UserInterface : MonoBehaviour
 	bool fadeOUT = false;
 	
 	string directIP = "192.168.1.1";
-	string directName = "Server Name (optional)";
+	string directName = "Server Name";
 	string directPort = "52531";
 	
 	Vector2 scrollView;
@@ -258,11 +258,9 @@ public class UserInterface : MonoBehaviour
 		scrollView = GUILayout.BeginScrollView ( scrollView, GUILayout.Width ( controlWindowRect.width ), GUILayout.Height ( controlWindowRect.height ));
 		
 		GUILayout.BeginVertical ();
-		GUILayout.Space ( 5 );
 		
-		GUILayout.BeginHorizontal ();
+		GUILayout.Space ( 5 );
 		GUILayout.Label ( "Direct Connection", labelLargeStyle );
-		GUILayout.EndHorizontal ();
 		
 		GUILayout.BeginHorizontal ();
 		GUILayout.Label ( "Connect to: ", labelMediumStyle );
@@ -270,7 +268,7 @@ public class UserInterface : MonoBehaviour
 		GUILayout.FlexibleSpace ();
 		directPort = GUILayout.TextField ( directPort, 5, textFieldStyle, GUILayout.MinWidth ( 50 ));
 		GUILayout.FlexibleSpace ();
-		directName = GUILayout.TextField ( directName, 22, textFieldStyle, GUILayout.MinWidth ( 120 ));
+		directName = GUILayout.TextField ( directName, 22, textFieldStyle, GUILayout.MinWidth ( 100 ));
 		GUILayout.FlexibleSpace ();
 		if ( GUILayout.Button ( "Save Server", buttonSmallStyle ))
 		{
@@ -288,20 +286,33 @@ public class UserInterface : MonoBehaviour
 
 		
 		GUILayout.Space ( 40 );
-		
-		GUILayout.BeginHorizontal ();
 		GUILayout.Label ( "Official Servers", labelLargeStyle );
-		GUILayout.EndHorizontal ();
 		
-		foreach ( OfficialServer server in externalInformation.officialServerList.officialServers )
+		foreach ( OfficialServer officialServer in externalInformation.officialServerList.officialServers )
 		{
 			
-			GUILayout.Button ( server.name, buttonMediumStyle );
+			GUILayout.Button ( officialServer.name, buttonMediumStyle );
 		}
 		
-		GUILayout.Space ( 40 );
-		
-		GUILayout.Label ( "Saved Servers", labelLargeStyle );
+		if ( externalInformation.savedServerList.savedServers != null && externalInformation.savedServerList.savedServers.Count > 0 )
+		{
+			
+			GUILayout.Space ( 40 );
+			GUILayout.Label ( "Saved Servers", labelLargeStyle );
+			
+			foreach ( SavedServer savedServer in externalInformation.savedServerList.savedServers )
+			{
+				
+				GUILayout.BeginHorizontal ();
+				GUILayout.Button ( savedServer.name, buttonMediumStyle );
+				if ( GUILayout.Button ( "Delete", buttonMediumStyle, GUILayout.Width ( 100 )))
+				{
+					
+					externalInformation.RemoveSavedServer ( savedServer.index );
+				}
+				GUILayout.EndHorizontal ();
+			}
+		}
 		
 		GUILayout.EndVertical ();
 		GUILayout.EndScrollView ();

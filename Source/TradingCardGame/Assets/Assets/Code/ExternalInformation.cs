@@ -30,21 +30,25 @@ public class OfficialServer
 	public string port;
 }
 
+
 [XmlRoot ( "SavedServers" )]
 public class SavedServerList
 {
 	
-	[XmlElement ( "SavedServer" )]
-	public SavedServer[] savedServers;
+	[XmlElement ( "Server" )]
+	public List<SavedServer> savedServers = new List<SavedServer> ();
 }
 
 public class SavedServer
 {
-	
+	[XmlAttribute]
+	public int index;
+		
 	public string name;
 	public string ipaddress;
 	public string port;
 }
+
 
 public class ExternalInformation : MonoBehaviour
 {
@@ -116,11 +120,11 @@ public class ExternalInformation : MonoBehaviour
 			try
 			{
 				
-				System.IO.StreamReader savedServerReader = new System.IO.StreamReader ( supportPath + "SavedServers.xml" );
-				string savedServerXML = savedServerReader.ReadToEnd();
-				savedServerReader.Close();
+				System.IO.StreamReader streamReader = new System.IO.StreamReader ( supportPath + "SavedServers.xml" );
+				string xml = streamReader.ReadToEnd();
+				streamReader.Close();
 		
-				savedServerList = savedServerXML.DeserializeXml<SavedServerList> ();
+				savedServerList = xml.DeserializeXml<SavedServerList>();
 			} catch ( Exception e )
 			{
 					
@@ -135,32 +139,63 @@ public class ExternalInformation : MonoBehaviour
 	
 	internal void SaveServer ( string ip, string port, string name )
 	{
-			
-		List<SavedServer> serverList = new List<SavedServer>();
 		
-		if ( File.Exists ( supportPath + "SavedServers.xml" ))
+		try {
+		
+			savedServerList.savedServers.Clear ();
+		
+			if ( File.Exists ( supportPath + "SavedServers.xml" ))
+			{
+			
+				System.IO.StreamReader streamReader = new System.IO.StreamReader ( supportPath + "SavedServers.xml" );
+				string xml = streamReader.ReadToEnd();
+				streamReader.Close();
+		
+				savedServerList = xml.DeserializeXml<SavedServerList>();
+			}
+		
+			SavedServer newServer = new SavedServer ();
+			newServer.ipaddress = ip;
+			newServer.port = port;
+			newServer.name = name;
+			newServer.index = savedServerList.savedServers.Count + 1;
+			
+			savedServerList.savedServers.Add ( newServer );
+			
+			XmlSerializer serializer = new XmlSerializer ( savedServerList.GetType ());
+			StreamWriter writer = new StreamWriter ( supportPath + "SavedServers.xml" );
+			serializer.Serialize ( writer.BaseStream, savedServerList );
+			
+			UnityEngine.Debug.Log ( "Saved without fault" );
+		} catch ( Exception e )
 		{
 			
-			System.IO.StreamReader streamReader = new System.IO.StreamReader ( supportPath + "SavedServers.xml" );
-			string xml = streamReader.ReadToEnd();
-			streamReader.Close();
-		
-			savedServerList = xml.DeserializeXml<SavedServerList>();
-			serverList = savedServerList.savedServers.ToList ();
+			UnityEngine.Debug.Log ( e );	
 		}
+	}
+	
+	
+	internal void RemoveSavedServer ( int index )
+	{
 		
-		SavedServer serverToAdd = new SavedServer ();
-		serverToAdd.ipaddress = ip;
-		serverToAdd.port = port;
-		serverToAdd.name = name;
+		XmlDocument doc = new XmlDocument();
 		
+		System.IO.StreamReader streamReader = new System.IO.StreamReader ( supportPath + "SavedServers.xml" );
+		string xml = streamReader.ReadToEnd();
+		streamReader.Close();
 		
-		serverList.Add ( serverToAdd );
+		doc.LoadXml ( xml );
+		XmlNode node = doc.SelectSingleNode ( "/SavedServers/Server[@index='" + index + "']" );
 		
-		XmlSerializer serializer = new XmlSerializer ( savedServerList.GetType ());
-		StreamWriter writer = new StreamWriter ( supportPath + "SavedServers.xml" );
-		serializer.Serialize ( writer.BaseStream, serverList );
-		
-		UnityEngine.Debug.Log ( "Saved without fault" );
+		if ( node != null )
+		{
+			
+			XmlNode parent = node.ParentNode;
+			parent.RemoveChild ( node );
+
+		   doc.Save ( supportPath + "SavedServers.xml" );
+		   
+		   FetchSavedServers ();
+		}
 	}
 }
