@@ -13,25 +13,38 @@ public class UserInterface : MonoBehaviour
 	GUIStyle labelLargeStyle;
 	GUIStyle labelMediumStyle;
 	GUIStyle labelSmallStyle;
+	
 	GUIStyle buttonLargeStyle;
 	GUIStyle buttonMediumStyle;
 	GUIStyle buttonSmallStyle;
+	
 	GUIStyle textFieldStyle;
 	GUIStyle windowStyle;
 	
-	bool host = false;
-	bool connect = false;
+	GUIStyle hiddenLargeStyle;
+	GUIStyle hiddenMediumStyle;
+	GUIStyle hiddenSmallStyle;
+
+
 	
-	bool fadeIN = false;
-	bool fadeOUT = false;
+	bool play = false;
+	bool hostSection = true;
+	string hostPort = "52531";
 	
+	bool directConnectSection = true;
 	string directIP = "192.168.1.1";
-	string directName = "Server Name";
 	string directPort = "52531";
+	string directName = "Server Name";
 	
-	Vector2 scrollView;
+	bool officialConnectSection = true;
+	bool savedServerSection = true;
+	
+	bool options = false;
 	
 	Color guicolor;
+	Vector2 scrollView;
+	bool fadeIN = false;
+	bool fadeOUT = false;
 	
 	
 	void Start ()
@@ -40,7 +53,7 @@ public class UserInterface : MonoBehaviour
 		externalInformation = GameObject.FindGameObjectWithTag ( "Manager" ).GetComponent<ExternalInformation>();
 	
 		homePaneRect = new Rect ( 0, 0, Screen.width, Screen.height );
-		controlWindowRect = new Rect ( 14, 204, 772, 360 );
+		controlWindowRect = new Rect ( Screen.width/2 - 386, 204, 772, 360 );
 		
 		labelLargeStyle = new GUIStyle ();
 		labelLargeStyle.fontSize = 48;
@@ -103,6 +116,15 @@ public class UserInterface : MonoBehaviour
 		windowStyle.normal.background = guiskin.button.normal.background;
 		windowStyle.onNormal.background = guiskin.button.normal.background;
 		
+		hiddenLargeStyle = new GUIStyle ();
+		hiddenLargeStyle.fontSize = 48;
+		
+		hiddenMediumStyle = new GUIStyle ();
+		hiddenMediumStyle.fontSize = 24;
+		
+		hiddenSmallStyle = new GUIStyle ();
+		hiddenSmallStyle.fontSize = 16;
+		
 		guicolor = new Color ( 1, 1, 1, 0 );
 	}
 	
@@ -132,8 +154,8 @@ public class UserInterface : MonoBehaviour
 				guicolor.a = Mathf.SmoothDamp ( guicolor.a, 0.0f, ref guicolor.a, 0.05f );
 			} else {
 
-				host = false;
-				connect = false;
+				play = false;
+				options = false;
 				fadeOUT = false;
 			}
 		}
@@ -168,14 +190,14 @@ public class UserInterface : MonoBehaviour
 		GUILayout.BeginHorizontal ();
 		GUILayout.FlexibleSpace ();
 		
-		if ( GUILayout.Button ( "Host", buttonLargeStyle, GUILayout.Width ( 350 )))
+		if ( GUILayout.Button ( "Play", buttonLargeStyle, GUILayout.Width ( 350 )))
 		{
 			
-			if ( host == false )
+			if ( play == false )
 			{
 				
-				host = true;
-				connect = false;
+				play = true;
+				options = false;
 				fadeIN = true;
 				GUI.FocusControl ( "" );
 				GUI.FocusWindow ( 1 );
@@ -186,16 +208,14 @@ public class UserInterface : MonoBehaviour
 			}
 		}
 		
-		GUILayout.FlexibleSpace ();
-		
-		if ( GUILayout.Button ( "Connect", buttonLargeStyle, GUILayout.Width ( 350 )))
+		if ( GUILayout.Button ( "Options", buttonLargeStyle, GUILayout.Width ( 350 )))
 		{
 			
-			if ( connect == false )
+			if ( options == false )
 			{
 			
-				connect = true;
-				host = false;
+				options = true;
+				play = false;
 				fadeIN = true;
 				GUI.FocusControl ( "" );
 				GUI.FocusWindow ( 2 );
@@ -217,16 +237,16 @@ public class UserInterface : MonoBehaviour
 		
 		GUI.color = guicolor;
 		
-		if ( host == true )
+		if ( play == true )
 		{
 			
-			GUILayout.Window ( 1, controlWindowRect, HostingWindow, "", windowStyle );
+			GUILayout.Window ( 1, controlWindowRect, PlayWindow, "", windowStyle );
 		}
 		
-		if ( connect == true )
+		if ( options == true )
 		{
 			
-			GUILayout.Window ( 2, controlWindowRect, ConnectingWindow, "", windowStyle );
+			GUILayout.Window ( 2, controlWindowRect, OptionsWindow, "", windowStyle );
 		}
 		
 		GUI.color = Color.white;
@@ -237,22 +257,7 @@ public class UserInterface : MonoBehaviour
 	}
 	
 	
-	void HostingWindow ( int windowID )
-	{
-		
-		GUILayout.BeginVertical ();
-		GUILayout.Space ( 5 );
-		GUILayout.BeginHorizontal ();
-		GUILayout.Space ( 5 );
-		
-		GUILayout.Label ( "Hosting Window", labelLargeStyle );
-		
-		GUILayout.EndHorizontal ();
-		GUILayout.EndVertical ();
-	}
-	
-	
-	void ConnectingWindow ( int windowID )
+	void PlayWindow ( int windowID )
 	{
 		
 		scrollView = GUILayout.BeginScrollView ( scrollView, GUILayout.Width ( controlWindowRect.width ), GUILayout.Height ( controlWindowRect.height ));
@@ -260,61 +265,145 @@ public class UserInterface : MonoBehaviour
 		GUILayout.BeginVertical ();
 		
 		GUILayout.Space ( 5 );
-		GUILayout.Label ( "Direct Connection", labelLargeStyle );
-		
 		GUILayout.BeginHorizontal ();
-		GUILayout.Label ( "Connect to: ", labelMediumStyle );
-		directIP = GUILayout.TextField ( directIP, 22, textFieldStyle, GUILayout.MinWidth ( 120 ));
-		GUILayout.FlexibleSpace ();
-		directPort = GUILayout.TextField ( directPort, 5, textFieldStyle, GUILayout.MinWidth ( 50 ));
-		GUILayout.FlexibleSpace ();
-		directName = GUILayout.TextField ( directName, 22, textFieldStyle, GUILayout.MinWidth ( 100 ));
-		GUILayout.FlexibleSpace ();
-		if ( GUILayout.Button ( "Save Server", buttonSmallStyle ))
+		GUILayout.Space ( 5 );
+		if ( GUILayout.Button ( "Host Match", hiddenLargeStyle ))
 		{
 			
-			externalInformation.SaveServer ( directIP, directPort, directName );
+			if ( hostSection == true )
+				hostSection = false;
+			else
+				hostSection = true;
 		}
-		GUILayout.FlexibleSpace ();
-		if ( GUILayout.Button ( "Connect", buttonSmallStyle ))
-		{
-			
-			
-		}
-		GUILayout.FlexibleSpace ();
 		GUILayout.EndHorizontal ();
+		
+		if ( hostSection == true )
+		{
+			
+			GUILayout.BeginHorizontal ();
+			GUILayout.Label ( "Host Match on: ", labelMediumStyle );
+			hostPort = GUILayout.TextField ( hostPort, 5, textFieldStyle );
+			if ( GUILayout.Button ( "Host", buttonSmallStyle ))
+			{
+				
+				
+			}
+			GUILayout.FlexibleSpace ();
+			GUILayout.EndHorizontal ();
+		}
+		
+		GUILayout.Space ( 40 );
+		GUILayout.BeginHorizontal ();
+		GUILayout.Space ( 5 );
+		if ( GUILayout.Button ( "Direct Connection", hiddenLargeStyle ))
+		{
+			
+			if ( directConnectSection == true )
+				directConnectSection = false;
+			else
+				directConnectSection = true;
+		}
+		GUILayout.EndHorizontal ();
+		
+		if ( directConnectSection == true )
+		{
+				
+			GUILayout.BeginHorizontal ();
+			GUILayout.Label ( "Connect to: ", labelMediumStyle );
+			directIP = GUILayout.TextField ( directIP, 22, textFieldStyle, GUILayout.MinWidth ( 120 ));
+			directPort = GUILayout.TextField ( directPort, 5, textFieldStyle, GUILayout.MinWidth ( 50 ));
+			directName = GUILayout.TextField ( directName, 22, textFieldStyle, GUILayout.MinWidth ( 100 ));
+			if ( GUILayout.Button ( "Save Server", buttonSmallStyle ))
+			{
+				
+				externalInformation.SaveServer ( directIP, directPort, directName );
+			}
+			if ( GUILayout.Button ( "Connect", buttonSmallStyle ))
+			{
+				
+				
+			}
+			GUILayout.FlexibleSpace ();
+			GUILayout.EndHorizontal ();
+		}
 
 		
 		GUILayout.Space ( 40 );
-		GUILayout.Label ( "Official Servers", labelLargeStyle );
-		
-		foreach ( OfficialServer officialServer in externalInformation.officialServerList.officialServers )
+		GUILayout.BeginHorizontal ();
+		GUILayout.Space ( 5 );
+		if ( GUILayout.Button ( "Official Servers", labelLargeStyle ))
 		{
 			
-			GUILayout.Button ( officialServer.name, buttonMediumStyle );
+			if ( officialConnectSection == true )
+				officialConnectSection = false;
+			else
+				officialConnectSection = true;
 		}
+		GUILayout.EndHorizontal ();
 		
-		if ( externalInformation.savedServerList.savedServers != null && externalInformation.savedServerList.savedServers.Count > 0 )
+		if ( officialConnectSection == true )
 		{
-			
-			GUILayout.Space ( 40 );
-			GUILayout.Label ( "Saved Servers", labelLargeStyle );
-			
-			foreach ( SavedServer savedServer in externalInformation.savedServerList.savedServers )
+		
+			foreach ( OfficialServer officialServer in externalInformation.officialServerList.officialServers )
 			{
 				
-				GUILayout.BeginHorizontal ();
-				GUILayout.Button ( savedServer.name, buttonMediumStyle );
-				if ( GUILayout.Button ( "Delete", buttonMediumStyle, GUILayout.Width ( 100 )))
-				{
-					
-					externalInformation.RemoveSavedServer ( savedServer.index );
-				}
-				GUILayout.EndHorizontal ();
+				GUILayout.Button ( officialServer.name, buttonMediumStyle );
 			}
 		}
 		
+		
+		if ( externalInformation.savedServerList.savedServers != null && externalInformation.savedServerList.savedServers.Count > 0 )
+		{
+				
+			GUILayout.Space ( 40 );
+			GUILayout.BeginHorizontal ();
+			GUILayout.Space ( 5 );
+			if ( GUILayout.Button ( "Saved Servers", labelLargeStyle ))
+			{
+					
+				if ( savedServerSection == true )
+					savedServerSection = false;
+				else
+					savedServerSection = true;
+			}
+			GUILayout.EndHorizontal ();
+				
+			if ( savedServerSection == true )
+			{
+				
+				foreach ( SavedServer savedServer in externalInformation.savedServerList.savedServers )
+				{
+					
+					GUILayout.BeginHorizontal ();
+					if ( GUILayout.Button ( savedServer.name, buttonMediumStyle ))
+					{
+						
+						
+					}
+					
+					if ( GUILayout.Button ( "Delete", buttonMediumStyle, GUILayout.Width ( 100 )))
+					{
+						
+						externalInformation.RemoveSavedServer ( savedServer.index );
+					}
+					GUILayout.EndHorizontal ();
+				}
+			}
+		}
+			
 		GUILayout.EndVertical ();
 		GUILayout.EndScrollView ();
+	}
+	
+	
+	void OptionsWindow ( int windowID )
+	{
+		
+		GUILayout.BeginVertical ();
+		GUILayout.Space ( 5 );
+		
+		GUILayout.Label ( "Options", labelLargeStyle );
+	
+		GUILayout.EndVertical ();
 	}
 }
