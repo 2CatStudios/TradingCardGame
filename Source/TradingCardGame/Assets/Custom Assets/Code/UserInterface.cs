@@ -6,6 +6,7 @@ public class UserInterface : MonoBehaviour
 	
 	ExternalInformation externalInformation;
 	NetworkManager networkManager;
+	LoadingImage loadingImage;
 	
 	public GUISkin guiskin;
 	internal Rect homePaneRect;
@@ -56,6 +57,7 @@ public class UserInterface : MonoBehaviour
 		
 		externalInformation = GameObject.FindGameObjectWithTag ( "ExternalInformation" ).GetComponent<ExternalInformation>();
 		networkManager = GameObject.FindGameObjectWithTag ( "NetworkManager" ).GetComponent<NetworkManager>();
+		loadingImage = gameObject.GetComponent<LoadingImage>();
 	
 		homePaneRect = new Rect ( 0, 0, Screen.width, Screen.height );
 		controlWindowRect = new Rect ( Screen.width/2 - 386, 204, 772, 360 );
@@ -144,6 +146,7 @@ public class UserInterface : MonoBehaviour
 		hiddenLargeStyle.fontSize = 48;
 		hiddenLargeStyle.hover.background = guiskin.button.normal.background;
 		hiddenLargeStyle.active.background = guiskin.button.active.background;
+		hiddenLargeStyle.onNormal.background = guiskin.button.active.background;
 		hiddenLargeStyle.border = new RectOffset ( 6, 6, 6, 4 );
 		hiddenLargeStyle.padding = new RectOffset ( 6, 6, 3, 3 );
 		hiddenLargeStyle.margin = new RectOffset ( 4, 4, 4, 4 );
@@ -465,7 +468,13 @@ public class UserInterface : MonoBehaviour
 		GUILayout.Space ( 5 );
 		
 		GUILayout.Label ( "Waiting for Opponent", labelMiddleLargeStyle );
-/*		LoadingImageHere	*/
+		
+		GUILayout.BeginHorizontal ();
+		GUILayout.FlexibleSpace ();
+		GUILayout.Label ( loadingImage.CurrentLoadingImage ());
+		GUILayout.FlexibleSpace ();
+		GUILayout.EndHorizontal ();
+		
 		GUILayout.FlexibleSpace ();
 		if ( GUILayout.Button ( "Disable Hosting", buttonMediumStyle ))
 		{
