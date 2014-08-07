@@ -14,10 +14,10 @@ public class NetworkSimulation : Editor
         
         NetworkManager networkManager = ( NetworkManager ) target;
 		
-        if ( GUILayout.Button ( "Button" ))
+        if ( GUILayout.Button ( "Simulate Connection" ))
         {
 			
-            networkManager.Test ();
+            networkManager.RecieveConnection ( "Simulated Opponent" );
         }
     }
 }

@@ -11,6 +11,7 @@ public class UserInterface : MonoBehaviour
 	public GUISkin guiskin;
 	internal Rect homePaneRect;
 	Rect controlWindowRect;
+	Rect gameWindowRect;
 	
 	GUIStyle labelLeftLargeStyle;
 	GUIStyle labelMiddleLargeStyle;
@@ -25,6 +26,7 @@ public class UserInterface : MonoBehaviour
 	
 	GUIStyle textFieldStyle;
 	GUIStyle windowStyle;
+	GUIStyle emptyStyle;
 	
 	GUIStyle hiddenLargeStyle;
 	GUIStyle hiddenMediumStyle;
@@ -45,6 +47,7 @@ public class UserInterface : MonoBehaviour
 	bool savedServerSection = false;
 	
 	bool options = false;
+	string playerName = "Ember";
 	
 	Color guicolor;
 	Vector2 scrollView;
@@ -61,6 +64,7 @@ public class UserInterface : MonoBehaviour
 	
 		homePaneRect = new Rect ( 0, 0, Screen.width, Screen.height );
 		controlWindowRect = new Rect ( Screen.width/2 - 386, 204, 772, 360 );
+		gameWindowRect = new Rect ( 0, 0, Screen.width, Screen.height );
 		
 		labelLeftLargeStyle = new GUIStyle ();
 		labelLeftLargeStyle.fontSize = 48;
@@ -142,6 +146,8 @@ public class UserInterface : MonoBehaviour
 		windowStyle.normal.background = guiskin.button.normal.background;
 		windowStyle.onNormal.background = guiskin.button.normal.background;
 		
+		emptyStyle = new GUIStyle ();
+		
 		hiddenLargeStyle = new GUIStyle ();
 		hiddenLargeStyle.fontSize = 48;
 		hiddenLargeStyle.hover.background = guiskin.button.normal.background;
@@ -211,90 +217,108 @@ public class UserInterface : MonoBehaviour
 		
 #region BaseMenu
 		
-		GUILayout.BeginArea ( homePaneRect );
-		GUILayout.BeginVertical ();
-		GUILayout.Space ( 5 );
-		GUILayout.BeginHorizontal ();
-		
-		GUILayout.FlexibleSpace ();
-		GUILayout.Label ( "Tradingcard Game", labelLeftLargeStyle );
-		GUILayout.FlexibleSpace ();
-		
-		GUILayout.EndHorizontal ();
-		GUILayout.BeginHorizontal ();
-		
-		GUILayout.FlexibleSpace ();
-		GUILayout.Label ( "Because OSX 10.10 Doesn't Run Games", labelLeftMediumStyle );
-		GUILayout.FlexibleSpace ();
-		
-		GUILayout.EndHorizontal ();
-		GUILayout.Space ( 50 );
-		GUILayout.BeginHorizontal ();
-		GUILayout.FlexibleSpace ();
-		
-		if ( GUILayout.Button ( "Play", buttonLargeStyle, GUILayout.Width ( 350 )))
+		if ( networkManager.connectionType != NetworkManager.ConnectionType.Hosting && networkManager.connectionType != NetworkManager.ConnectionType.Connected )
 		{
-			
-			if ( play == false )
-			{
-				
-				play = true;
-				options = false;
-				fadeIN = true;
-				GUI.FocusControl ( "" );
-				GUI.FocusWindow ( 1 );
-			} else {
-				
-				fadeOUT = true;
-				fadeIN = false;
-			}
-		}
 		
-		if ( GUILayout.Button ( "Options", buttonLargeStyle, GUILayout.Width ( 350 )))
-		{
+			GUILayout.BeginArea ( homePaneRect );
+			GUILayout.BeginVertical ();
 			
-			if ( options == false )
+			GUILayout.Space ( 5 );
+			GUILayout.BeginHorizontal ();
+			GUILayout.FlexibleSpace ();
+			GUILayout.Label ( "Tradingcard Game", labelLeftLargeStyle );
+			GUILayout.FlexibleSpace ();
+			
+			GUILayout.EndHorizontal ();
+			GUILayout.BeginHorizontal ();
+			
+			GUILayout.FlexibleSpace ();
+			GUILayout.Label ( "Because OSX 10.10 Doesn't Run Games", labelLeftMediumStyle );
+			GUILayout.FlexibleSpace ();
+			GUILayout.EndHorizontal ();
+			GUILayout.Space ( 50 );
+			
+			if ( networkManager.connectionType == NetworkManager.ConnectionType.None )
 			{
 			
-				options = true;
-				play = false;
-				fadeIN = true;
-				GUI.FocusControl ( "" );
-				GUI.FocusWindow ( 2 );
-			} else {
-		
-				fadeOUT = true;
-				fadeIN = false;
+				GUILayout.BeginHorizontal ();
+				GUILayout.FlexibleSpace ();
+			
+				if ( GUILayout.Button ( "Play", buttonLargeStyle, GUILayout.Width ( 350 )))
+				{
+					
+					if ( play == false )
+					{
+						
+						play = true;
+						options = false;
+						fadeIN = true;
+						GUI.FocusControl ( "" );
+						GUI.FocusWindow ( 1 );
+					} else {
+						
+						fadeOUT = true;
+						fadeIN = false;
+					}
+				}
+				
+				if ( GUILayout.Button ( "Options", buttonLargeStyle, GUILayout.Width ( 350 )))
+				{
+					
+					if ( options == false )
+					{
+					
+						options = true;
+						play = false;
+						fadeIN = true;
+						GUI.FocusControl ( "" );
+						GUI.FocusWindow ( 2 );
+					} else {
+				
+						fadeOUT = true;
+						fadeIN = false;
+					}
+				}
+			
+				GUILayout.FlexibleSpace ();
+				GUILayout.EndHorizontal ();
 			}
+		
+			GUILayout.EndVertical ();
+			GUILayout.EndArea ();
 		}
-		
-		GUILayout.FlexibleSpace ();
-		
-		GUILayout.EndHorizontal ();
-		GUILayout.EndVertical ();
-		GUILayout.EndArea ();
 		
 #endregion
 #region Windows
 		
 		GUI.color = guicolor;
 		
-		if ( play == true && networkManager.connectionType == NetworkManager.ConnectionType.None )
+		if ( networkManager.connectionType == NetworkManager.ConnectionType.None )
 		{
+		
+			if ( play == true  )
+			{
+				
+				GUILayout.Window ( 1, controlWindowRect, PlayWindow, "", windowStyle );
+			}
 			
-			GUILayout.Window ( 1, controlWindowRect, PlayWindow, "", windowStyle );
+			if ( options == true )
+			{
+				
+				GUILayout.Window ( 2, controlWindowRect, OptionsWindow, "", windowStyle );
+			}
 		}
 		
-		if ( options == true && networkManager.connectionType == NetworkManager.ConnectionType.None )
-		{
-			
-			GUILayout.Window ( 2, controlWindowRect, OptionsWindow, "", windowStyle );
-		}
-		
-		if ( networkManager.connectionType == NetworkManager.ConnectionType.Hosting )
+		if ( networkManager.connectionType == NetworkManager.ConnectionType.WaitingForConnection )
 		{
 			
 			GUILayout.Window ( 3, controlWindowRect, HostingWindow, "", windowStyle );
+		}
+		
+		if ( networkManager.connectionType == NetworkManager.ConnectionType.Hosting || networkManager.connectionType == NetworkManager.ConnectionType.Connected )
+		{
+			
+			GUILayout.Window ( 4, gameWindowRect, GameWindow, "", emptyStyle );
 		}
 		
 		GUI.color = Color.white;
@@ -455,7 +479,12 @@ public class UserInterface : MonoBehaviour
 		GUILayout.Space ( 5 );
 		
 		GUILayout.Label ( "Options", labelLeftLargeStyle );
-		GUILayout.Label ( "Nothing lives here right now.", labelLeftMediumStyle );
+		
+		GUILayout.BeginHorizontal ();
+		GUILayout.Label ( "PlayerName: ", labelLeftMediumStyle );
+		playerName = GUILayout.TextField ( playerName, 22, textFieldStyle, GUILayout.MinWidth ( 120 ));
+		GUILayout.FlexibleSpace ();
+		GUILayout.EndHorizontal ();
 	
 		GUILayout.EndVertical ();
 	}
@@ -466,7 +495,7 @@ public class UserInterface : MonoBehaviour
 		
 		GUILayout.BeginVertical ();
 		GUILayout.Space ( 5 );
-		
+	
 		GUILayout.Label ( "Waiting for Opponent", labelMiddleLargeStyle );
 		
 		GUILayout.BeginHorizontal ();
@@ -478,16 +507,32 @@ public class UserInterface : MonoBehaviour
 		GUILayout.FlexibleSpace ();
 		if ( GUILayout.Button ( "Disable Hosting", buttonMediumStyle ))
 		{
-			
+				
 			networkManager.ShutdownHost ();
-			
+				
 			play = true;
 			options = false;
-			
+				
 			GUI.FocusControl ( "" );
 			GUI.FocusWindow ( 1 );
 		}
 		
+		GUILayout.EndVertical ();
+	}
+	
+	
+	void GameWindow ( int windowID )
+	{
+		
+		GUILayout.BeginVertical ();
+		GUILayout.BeginHorizontal ();
+		
+		GUILayout.FlexibleSpace ();
+		GUILayout.Label ( playerName + " VS " + networkManager.opponentName, labelMiddleLargeStyle );
+		GUILayout.FlexibleSpace ();
+		
+		GUILayout.EndHorizontal ();
+		GUILayout.FlexibleSpace ();
 		GUILayout.EndVertical ();
 	}
 }

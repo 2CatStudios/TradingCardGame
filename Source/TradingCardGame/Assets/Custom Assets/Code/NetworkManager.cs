@@ -6,8 +6,10 @@ using System.Collections;
 public class NetworkManager : MonoBehaviour
 {
 	
-	internal enum ConnectionType { None, Hosting, Connecting }
+	internal enum ConnectionType { None, WaitingForConnection, Hosting, Connecting, Connected }
 	internal ConnectionType connectionType;
+	
+	internal string opponentName;
 
 
 	void Start ()
@@ -17,28 +19,24 @@ public class NetworkManager : MonoBehaviour
 	}
 
 
-	public bool SetupHost ( string port )
+	public void SetupHost ( string port )
 	{
-			
-		//Network.InitializeServer ( 1, Int32.Parse ( port ), false );
-		connectionType = ConnectionType.Hosting;
-			
-		return true;
+
+		connectionType = ConnectionType.WaitingForConnection;
 	}
 		
 		
-	public bool ShutdownHost ()
+	public void ShutdownHost ()
 	{
 			
-		//Network.Disconnect ();
 		connectionType = ConnectionType.None;
-			
-		return true;
 	}
 	
-	public void Test ()
+
+	public void RecieveConnection ( string receivedOpponentName )
 	{
 		
-		UnityEngine.Debug.Log ( "Test" );
+		opponentName = receivedOpponentName;
+		connectionType = ConnectionType.Hosting;
 	}
 }
