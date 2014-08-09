@@ -32,7 +32,6 @@ public class UserInterface : MonoBehaviour
 	GUIStyle hiddenMediumStyle;
 	GUIStyle hiddenSmallStyle;
 
-
 	
 	bool play = false;
 	bool hostSection = false;
@@ -209,7 +208,6 @@ public class UserInterface : MonoBehaviour
 		}
 	}
 	
-	
 	void OnGUI ()
 	{
 		
@@ -217,7 +215,7 @@ public class UserInterface : MonoBehaviour
 		
 #region BaseMenu
 		
-		if ( networkManager.connectionType != NetworkManager.ConnectionType.Hosting && networkManager.connectionType != NetworkManager.ConnectionType.Connected )
+		if ( networkManager.connectionType != NetworkManager.ConnectionType.Playing )
 		{
 		
 			GUILayout.BeginArea ( homePaneRect );
@@ -254,7 +252,7 @@ public class UserInterface : MonoBehaviour
 						options = false;
 						fadeIN = true;
 						GUI.FocusControl ( "" );
-						GUI.FocusWindow ( 1 );
+						GUI.FocusWindow ( 2 );
 					} else {
 						
 						fadeOUT = true;
@@ -272,7 +270,7 @@ public class UserInterface : MonoBehaviour
 						play = false;
 						fadeIN = true;
 						GUI.FocusControl ( "" );
-						GUI.FocusWindow ( 2 );
+						GUI.FocusWindow ( 3 );
 					} else {
 				
 						fadeOUT = true;
@@ -299,33 +297,34 @@ public class UserInterface : MonoBehaviour
 			if ( play == true  )
 			{
 				
-				GUILayout.Window ( 1, controlWindowRect, PlayWindow, "", windowStyle );
+				GUILayout.Window ( 2, controlWindowRect, PlayWindow, "", windowStyle );
 			}
 			
 			if ( options == true )
 			{
 				
-				GUILayout.Window ( 2, controlWindowRect, OptionsWindow, "", windowStyle );
+				GUILayout.Window ( 3, controlWindowRect, OptionsWindow, "", windowStyle );
 			}
 		}
 		
-		if ( networkManager.connectionType == NetworkManager.ConnectionType.WaitingForConnection )
+		if ( networkManager.hosting == true )
 		{
 			
-			GUILayout.Window ( 3, controlWindowRect, HostingWindow, "", windowStyle );
-		}
-		
-		if ( networkManager.connectionType == NetworkManager.ConnectionType.Hosting || networkManager.connectionType == NetworkManager.ConnectionType.Connected )
-		{
+			if ( networkManager.connectionType == NetworkManager.ConnectionType.Playing )
+			{
 			
-			GUILayout.Window ( 4, gameWindowRect, GameWindow, "", emptyStyle );
+				GUILayout.Window ( 5, gameWindowRect, GameWindow, "", emptyStyle );
+			} else {
+				
+				GUILayout.Window ( 4, controlWindowRect, HostingWindow, "", windowStyle );
+			}
 		}
 		
 		GUI.color = Color.white;
 		
 #endregion
 		
-		GUI.SetNextControlName ( "" );	
+		GUI.SetNextControlName ( "" );
 	}
 	
 	
@@ -358,7 +357,15 @@ public class UserInterface : MonoBehaviour
 			if ( GUILayout.Button ( "Host", buttonSmallStyle ))
 			{
 				
-				networkManager.SetupHost ( hostPort );
+				UnityEngine.Debug.Log ( "Initializing Host" );
+				if ( networkManager.SetupHost ( hostPort ))
+				{
+					
+					UnityEngine.Debug.Log ( "\tHosting Enabled Sucessfully" );
+				} else {
+					
+					UnityEngine.Debug.LogError ( "\tUnable to Initialize Hosting" );
+				}
 			}
 			GUILayout.FlexibleSpace ();
 			GUILayout.EndHorizontal ();
@@ -388,7 +395,15 @@ public class UserInterface : MonoBehaviour
 			if ( GUILayout.Button ( "Save Server", buttonSmallStyle ))
 			{
 				
-				externalInformation.SaveServer ( directIP, directPort, directName );
+				UnityEngine.Debug.Log ( "\nSaving Server [" + directIP + ", " + directPort + ", " + directName + "]" );
+				if ( externalInformation.SaveServer ( directIP, directPort, directName ))
+				{
+					
+					UnityEngine.Debug.Log ( "\tServer Saved Successfully" );
+				} else {
+					
+					UnityEngine.Debug.LogError ( "\tUnable to Save Server" );
+				}
 			}
 			if ( GUILayout.Button ( "Connect", buttonSmallStyle ))
 			{
@@ -460,7 +475,15 @@ public class UserInterface : MonoBehaviour
 					if ( GUILayout.Button ( "Delete", buttonMediumStyle, GUILayout.Width ( 100 )))
 					{
 						
-						externalInformation.RemoveSavedServer ( savedServer.index );
+						UnityEngine.Debug.Log ( "\nDeleting Server " + savedServer.name + " (" + savedServer.index + ")" );
+						if ( externalInformation.RemoveSavedServer ( savedServer.index ))
+						{
+							
+							UnityEngine.Debug.Log ( "\tServer Deleted Successfully" );
+						} else {
+							
+							UnityEngine.Debug.LogError ( "\tUnable to Delete Server" );
+						}
 					}
 					GUILayout.EndHorizontal ();
 				}
@@ -482,7 +505,7 @@ public class UserInterface : MonoBehaviour
 		
 		GUILayout.BeginHorizontal ();
 		GUILayout.Label ( "PlayerName: ", labelLeftMediumStyle );
-		playerName = GUILayout.TextField ( playerName, 22, textFieldStyle, GUILayout.MinWidth ( 120 ));
+		playerName = GUILayout.TextField ( playerName, 12, textFieldStyle, GUILayout.MinWidth ( 120 ));
 		GUILayout.FlexibleSpace ();
 		GUILayout.EndHorizontal ();
 	
@@ -495,28 +518,98 @@ public class UserInterface : MonoBehaviour
 		
 		GUILayout.BeginVertical ();
 		GUILayout.Space ( 5 );
-	
-		GUILayout.Label ( "Waiting for Opponent", labelMiddleLargeStyle );
 		
-		GUILayout.BeginHorizontal ();
-		GUILayout.FlexibleSpace ();
-		GUILayout.Label ( loadingImage.CurrentLoadingImage ());
-		GUILayout.FlexibleSpace ();
-		GUILayout.EndHorizontal ();
-		
-		GUILayout.FlexibleSpace ();
-		if ( GUILayout.Button ( "Disable Hosting", buttonMediumStyle ))
+		if ( networkManager.info == false )
 		{
+		
+			if ( networkManager.hosting == true && networkManager.connectionType == NetworkManager.ConnectionType.Hosting )
+			{
+			
+				GUILayout.Label ( "Waiting for Opponent", labelMiddleMediumStyle );
 				
-			networkManager.ShutdownHost ();
+				GUILayout.BeginHorizontal ();
+				GUILayout.FlexibleSpace ();
+				GUILayout.Label ( loadingImage.CurrentLoadingImage ());
+				GUILayout.FlexibleSpace ();
+				GUILayout.EndHorizontal ();
+			}
+			
+			if ( networkManager.hosting == true && networkManager.connectionType == NetworkManager.ConnectionType.Connected )
+			{
 				
-			play = true;
-			options = false;
+				GUILayout.Label ( playerName + " VS " + networkManager.opponentName, labelMiddleLargeStyle );
 				
-			GUI.FocusControl ( "" );
-			GUI.FocusWindow ( 1 );
+				GUILayout.BeginHorizontal ();
+				GUILayout.FlexibleSpace ();
+				GUILayout.Label ( "Match length: Indefinite", labelLeftMediumStyle );
+				GUILayout.FlexibleSpace ();
+				GUILayout.Label ( "Cards in MasterDeck: 0", labelLeftMediumStyle );
+				GUILayout.FlexibleSpace ();
+				GUILayout.EndHorizontal ();
+				
+				if ( networkManager.options == false )
+				{
+				
+					GUILayout.Space ( 20 );
+					if ( GUILayout.Button ( "Begin Match", buttonLargeStyle ))
+					{
+						
+						networkManager.connectionType = NetworkManager.ConnectionType.Playing;
+					}
+					
+					GUILayout.Space ( 5 );
+					if ( GUILayout.Button ( "Match Options", buttonMediumStyle ))
+					{
+						
+						networkManager.options = true;
+					}
+					
+					if ( GUILayout.Button ( "Boot Opponent", buttonMediumStyle ))
+					{
+						
+						
+					}
+				
+				} else {
+				
+					GUILayout.FlexibleSpace ();
+					if ( GUILayout.Button ( "Back", buttonMediumStyle ))
+					{
+						
+						networkManager.options = false;
+					}
+				}
+			}
+		} else {
+		
+			GUILayout.Label ( networkManager.infoString, labelMiddleMediumStyle );
 		}
 		
+		if ( networkManager.options == false )
+		{
+			
+			GUILayout.FlexibleSpace ();
+			if ( GUILayout.Button ( "Disable Hosting", buttonMediumStyle ))
+			{
+				
+				UnityEngine.Debug.Log ( "Shutting Down Server" );
+				if ( networkManager.ShutdownHost ())
+				{
+					
+					UnityEngine.Debug.Log ( "\tHosting Disabled Successfully" );
+				} else {
+					
+					UnityEngine.Debug.LogError ( "\tUnable to Disable Hosting" );
+				}
+					
+				play = true;
+				options = false;
+					
+				GUI.FocusControl ( "" );
+				GUI.FocusWindow ( 1 );
+			}
+		}
+			
 		GUILayout.EndVertical ();
 	}
 	
@@ -528,7 +621,7 @@ public class UserInterface : MonoBehaviour
 		GUILayout.BeginHorizontal ();
 		
 		GUILayout.FlexibleSpace ();
-		GUILayout.Label ( playerName + " VS " + networkManager.opponentName, labelMiddleLargeStyle );
+		GUILayout.Label ( "Game goes here.", labelMiddleLargeStyle );
 		GUILayout.FlexibleSpace ();
 		
 		GUILayout.EndHorizontal ();

@@ -64,54 +64,114 @@ public class ExternalInformation : MonoBehaviour
 	void Start ()
 	{
 		
-		SetupLocalDirectories ();
-		UnityEngine.Debug.Log ( "Local Directories Setup" );
+		if ( Environment.OSVersion.ToString ().Substring ( 0, 4 ) == "Unix" )
+		{
+			
+			path = macPath;
+			UnityEngine.Debug.Log ( "Client running on Mac OS" );
+		} else {
+			
+			path = windowsPath;
+			UnityEngine.Debug.Log ( "Client running on Windows OS" );
+		}
 		
-		FetchOfficialServers ();
-		UnityEngine.Debug.Log ( "Offical Servers Downloaded" );
+		UnityEngine.Debug.Log ( "Application Size: " + Screen.width + " x " + Screen.height );
+		UnityEngine.Debug.Log ( "Screen Size: " + Screen.currentResolution.width + " x " + Screen.currentResolution.height );
+		UnityEngine.Debug.Log ( "Refresh Rate (If Obtainable): " + Screen.currentResolution.refreshRate );
 		
-		FetchSavedServers ();
-		UnityEngine.Debug.Log ( "Saved Servers Loaded" );
+		UnityEngine.Debug.Log ( "\nInitializing Local Directories" );
+		if ( SetupLocalDirectories ())
+		{
+			
+			UnityEngine.Debug.Log ( "\tLocal Directories Setup Successfully" );
+		} else {
+			
+			UnityEngine.Debug.LogError ( "\tUnable to Setup Local Directories" );
+		}
+		
+		UnityEngine.Debug.Log ( "\nDownloading Official Server Index" );
+		if ( FetchOfficialServers ())
+		{
+			
+			UnityEngine.Debug.Log ( "\tOfficial Server Index Loaded Successfully" );
+		} else {
+			
+			UnityEngine.Debug.LogError ( "\tUnable to Download Official Server Index" );
+		}
+		
+		UnityEngine.Debug.Log ( "\nLoading Saved Servers" );
+		if ( FetchSavedServers ())
+		{
+			
+			UnityEngine.Debug.Log ( "\tSaved Servers Index Loaded Successfully" );
+		} else {
+			
+			UnityEngine.Debug.LogError ( "\tUnable to Load Saved Servers" );
+		}
+		
+		UnityEngine.Debug.Log ( "\nStartup Completed" );
 	}
 	
 	
-	void SetupLocalDirectories ()
+	bool SetupLocalDirectories ()
 	{
-		
-		if ( Environment.OSVersion.ToString ().Substring ( 0, 4 ) == "Unix" )
-			path = macPath;
-		else
-			path = windowsPath;
 		
 		supportPath = path + "Support" + Path.DirectorySeparatorChar;
 		
 		if ( !Directory.Exists ( supportPath ))
+		{
+			
 			Directory.CreateDirectory ( supportPath );
+			UnityEngine.Debug.Log ( "\tSupport Path has been created" );
+		} else {
+			
+			UnityEngine.Debug.Log ( "\tSupport Path exists" );
+		}
+		
+		return true;
 	}
 	
 	
-	void FetchOfficialServers ()
+	bool FetchOfficialServers ()
 	{
 		
 		if ( File.Exists ( supportPath + "OfficialServers.xml" ))
-			File.Delete ( supportPath + "OfficialServers.xml" );
-			
-		Uri url = new Uri ( "https://raw.githubusercontent.com/2CatStudios/TradingCardGame/master/Online/Servers.xml" );
-		using ( WebClient client = new WebClient ())
 		{
-				
-			client.DownloadFile ( url, supportPath + "OfficialServers.xml" );
+			
+			File.Delete ( supportPath + "OfficialServers.xml" );
+			UnityEngine.Debug.Log ( "\tOld Official Server List Deleted" );
 		}
-	
-		System.IO.StreamReader streamReader = new System.IO.StreamReader ( supportPath + "OfficialServers.xml" );
-		string xml = streamReader.ReadToEnd();
-		streamReader.Close();
 		
-		officialServerList = xml.DeserializeXml<OfficialServerList>();
+		try {
+			
+			Uri url = new Uri ( "https://raw.githubusercontent.com/2CatStudios/TradingCardGame/master/Online/Servers.xml" );
+			using ( WebClient client = new WebClient ())
+			{
+					
+				client.DownloadFile ( url, supportPath + "OfficialServers.xml" );
+			}
+			UnityEngine.Debug.Log ( "\tOfficial Server Log Downloaded" );
+	    	
+			System.IO.StreamReader streamReader = new System.IO.StreamReader ( supportPath + "OfficialServers.xml" );
+			string xml = streamReader.ReadToEnd();
+			streamReader.Close();
+			
+			UnityEngine.Debug.Log ( "\t\tRead into Memory" );
+			
+			officialServerList = xml.DeserializeXml<OfficialServerList>();
+			
+			UnityEngine.Debug.Log ( "\t\tDeserialized" );
+		} catch ( Exception e ) {
+			
+			UnityEngine.Debug.LogError ( "\tERROR: " + e );
+			return false;
+		}
+		
+		return true;
 	}
 	
 	
-	void FetchSavedServers ()
+	bool FetchSavedServers ()
 	{
 		
 		if ( File.Exists ( supportPath + "SavedServers.xml" ))
@@ -120,82 +180,137 @@ public class ExternalInformation : MonoBehaviour
 			try
 			{
 				
+				UnityEngine.Debug.Log ( "\tReading Saved Servers" );
+				
 				System.IO.StreamReader streamReader = new System.IO.StreamReader ( supportPath + "SavedServers.xml" );
 				string xml = streamReader.ReadToEnd();
 				streamReader.Close();
+				
+				UnityEngine.Debug.Log ( "\t\tRead into Memory" );
 		
 				savedServerList = xml.DeserializeXml<SavedServerList>();
+				
+				UnityEngine.Debug.Log ( "\t\tDeserialized" );
 			} catch ( Exception e )
 			{
 					
-				UnityEngine.Debug.Log ( e );
+				UnityEngine.Debug.LogError ( "\tERROR: " + e );
 			}
 		} else {
 			
-			UnityEngine.Debug.Log ( "SavedServers.xml doesn't exist!" );
+			UnityEngine.Debug.LogWarning ( "\tNo Saved Servers Found" );
 		}
+		
+		return true;
 	}
 	
 	
-	internal void SaveServer ( string ip, string port, string name )
+	internal bool SaveServer ( string ip, string port, string name )
 	{
 		
 		try {
 		
 			savedServerList.savedServers.Clear ();
+			UnityEngine.Debug.Log ( "\tSaved Servers Cleared from Memory" );
 		
 			if ( File.Exists ( supportPath + "SavedServers.xml" ))
 			{
-			
+				
+				UnityEngine.Debug.Log ( "\tReading Current Saved Servers to Memory" );
+				
 				System.IO.StreamReader streamReader = new System.IO.StreamReader ( supportPath + "SavedServers.xml" );
 				string xml = streamReader.ReadToEnd();
 				streamReader.Close();
+				
+				UnityEngine.Debug.Log ( "\t\tRead into Memory" );
 		
 				savedServerList = xml.DeserializeXml<SavedServerList>();
+				
+				UnityEngine.Debug.Log ( "\t\tDeserialized" );
 			}
+			
+			UnityEngine.Debug.Log ( "\tCreating New Server Entry" );
 		
 			SavedServer newServer = new SavedServer ();
 			newServer.ipaddress = ip;
+			UnityEngine.Debug.Log ( "\t\t" + newServer.ipaddress );
+			
 			newServer.port = port;
+			UnityEngine.Debug.Log ( "\t\t" + newServer.port );
+			
 			newServer.name = name;
+			UnityEngine.Debug.Log ( "\t\t" + newServer.name );
+			
 			newServer.index = savedServerList.savedServers.Count + 1;
+			UnityEngine.Debug.Log ( "\t\t" + newServer.index );
 			
 			savedServerList.savedServers.Add ( newServer );
+			
+			UnityEngine.Debug.Log ( "\tNew Server Added to Memory" );
 			
 			XmlSerializer serializer = new XmlSerializer ( savedServerList.GetType ());
 			StreamWriter writer = new StreamWriter ( supportPath + "SavedServers.xml" );
 			serializer.Serialize ( writer.BaseStream, savedServerList );
 			
-			UnityEngine.Debug.Log ( "Saved without fault" );
+			UnityEngine.Debug.Log ( "\tUpdated Saved Servers List Written to Disk" );
+
 		} catch ( Exception e )
 		{
 			
-			UnityEngine.Debug.Log ( e );	
+			UnityEngine.Debug.LogError ( "\tERROR: " + e );
+			return false;
 		}
+		
+		return true;
 	}
 	
 	
-	internal void RemoveSavedServer ( int index )
+	internal bool RemoveSavedServer ( int index )
 	{
 		
 		XmlDocument doc = new XmlDocument();
+		
+		UnityEngine.Debug.Log ( "\tReading Saved Server List into Memory" );
 		
 		System.IO.StreamReader streamReader = new System.IO.StreamReader ( supportPath + "SavedServers.xml" );
 		string xml = streamReader.ReadToEnd();
 		streamReader.Close();
 		
+		UnityEngine.Debug.Log ( "\t\tRead into Memory" );
+		
 		doc.LoadXml ( xml );
 		XmlNode node = doc.SelectSingleNode ( "/SavedServers/Server[@index='" + index + "']" );
+		
+		UnityEngine.Debug.Log ( "\tSearching for Node" );
 		
 		if ( node != null )
 		{
 			
+			UnityEngine.Debug.Log ( "\t\tNode Located" );
+			
 			XmlNode parent = node.ParentNode;
 			parent.RemoveChild ( node );
-
-		   doc.Save ( supportPath + "SavedServers.xml" );
-		   
-		   FetchSavedServers ();
+			
+			UnityEngine.Debug.Log ( "\t\tServer Removed" );
+			
+			doc.Save ( supportPath + "SavedServers.xml" );
+			
+			UnityEngine.Debug.Log ( "\tLoading Updated Saved Servers" );
+			if ( FetchSavedServers ())
+			{
+			
+				UnityEngine.Debug.Log ( "\tSaved Servers Index Loaded Successfully" );
+			} else {
+			
+				UnityEngine.Debug.LogError ( "\tUnable to Load Saved Servers" );
+			}
+		} else {
+			
+			UnityEngine.Debug.LogError ( "\t\tUnable to Locate Node" );
+			
+			return false;
 		}
+		
+		return true;
 	}
 }

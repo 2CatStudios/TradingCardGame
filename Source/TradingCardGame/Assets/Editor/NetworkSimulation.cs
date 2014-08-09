@@ -14,10 +14,25 @@ public class NetworkSimulation : Editor
         
         NetworkManager networkManager = ( NetworkManager ) target;
 		
-        if ( GUILayout.Button ( "Simulate Connection" ))
+		GUILayout.Space ( 10 );
+		GUILayout.Label ( "Simulate Opponent" );
+		
+		GUILayout.BeginHorizontal ();
+        if ( GUILayout.Button ( "Connect", GUILayout.Width ( 200 )))
         {
 			
-            networkManager.RecieveConnection ( "Simulated Opponent" );
+            networkManager.ReceiveConnection ( "SimulatedOpp" );
         }
+		GUILayout.FlexibleSpace ();
+		GUILayout.EndHorizontal ();
+		
+		GUILayout.BeginHorizontal ();
+		if ( GUILayout.Button ( "Disconnect", GUILayout.Width ( 200 )))
+		{
+			
+			networkManager.DisconnectOpponent ();
+		}
+		GUILayout.FlexibleSpace ();
+		GUILayout.EndHorizontal ();
     }
 }
