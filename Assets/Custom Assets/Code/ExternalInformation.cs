@@ -325,11 +325,9 @@ public class ExternalInformation : MonoBehaviour
 	
 		UnityEngine.Debug.Log ( "\t\tRead into Memory" );
 		
-		//officialServerList = xml.DeserializeXml<OfficialServerList>();
+		//officialServerList = deckXML.DeserializeXml<OfficialServerList>();
 		
 		UnityEngine.Debug.Log ( "\t\tDeserialized" );
-	
-		//preferences = deckXML.DeserializeXml<Preferences> ();
 		
 		return true;
 	}
