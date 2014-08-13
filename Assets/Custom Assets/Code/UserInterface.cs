@@ -4,6 +4,7 @@ using System.Collections;
 public class UserInterface : MonoBehaviour
 {
 	
+	DebugLog debugLog;
 	ExternalInformation externalInformation;
 	NetworkManager networkManager;
 	LoadingImage loadingImage;
@@ -32,6 +33,7 @@ public class UserInterface : MonoBehaviour
 	GUIStyle hiddenMediumStyle;
 	GUIStyle hiddenSmallStyle;
 
+	bool startMenu = false;
 	
 	bool play = false;
 	bool hostSection = false;
@@ -50,6 +52,8 @@ public class UserInterface : MonoBehaviour
 	
 	Color guicolor;
 	Vector2 scrollView;
+	Vector2 scrollPosition;
+	Vector2 startupWindowScrollPosition;
 	bool fadeIN = false;
 	bool fadeOUT = false;
 	
@@ -57,6 +61,7 @@ public class UserInterface : MonoBehaviour
 	void Start ()
 	{
 		
+		debugLog = GameObject.FindGameObjectWithTag ( "DebugLog" ).GetComponent<DebugLog>();
 		externalInformation = GameObject.FindGameObjectWithTag ( "ExternalInformation" ).GetComponent<ExternalInformation>();
 		networkManager = GameObject.FindGameObjectWithTag ( "NetworkManager" ).GetComponent<NetworkManager>();
 		loadingImage = gameObject.GetComponent<LoadingImage>();
@@ -213,118 +218,188 @@ public class UserInterface : MonoBehaviour
 		
 		GUI.skin = guiskin;
 		
+		
+		if ( debugLog.debugLogActive == true )
+		{
+			
+			GUI.skin = guiskin;
+			GUILayout.BeginArea ( new Rect ( 0, 0, Screen.width, Screen.height ));
+			scrollPosition = GUILayout.BeginScrollView ( scrollPosition, false, false, GUILayout.Width ( Screen.width ), GUILayout.Height ( Screen.height ));
+			GUILayout.FlexibleSpace ();
+			
+			for ( int index = 0; index < debugLog.debugLog.Count; index += 1 )
+			{
+				
+				GUILayout.Label ( debugLog.debugLog[index] );
+			}
+			
+			scrollPosition.y = Mathf.Infinity;
+				
+			GUILayout.EndScrollView ();
+			GUILayout.EndArea ();
+		}
+		
+		
 #region BaseMenu
 		
-		if ( networkManager.connectionType != NetworkManager.ConnectionType.Playing )
+		if ( startMenu == false )
 		{
+			
+			GUILayout.Window ( 0, new Rect ( Screen.width/2 - 386, 204, 772, 360 ), StartupWindow, "", windowStyle );
+			
+		} else {
 		
-			GUILayout.BeginArea ( homePaneRect );
-			GUILayout.BeginVertical ();
+			if ( networkManager.connectionType != NetworkManager.ConnectionType.Playing )
+			{
 			
-			GUILayout.Space ( 5 );
-			GUILayout.BeginHorizontal ();
-			GUILayout.FlexibleSpace ();
-			GUILayout.Label ( "Tradingcard Game", labelLeftLargeStyle );
-			GUILayout.FlexibleSpace ();
+				GUILayout.BeginArea ( homePaneRect );
+				GUILayout.BeginVertical ();
+				
+				GUILayout.Space ( 5 );
+				GUILayout.BeginHorizontal ();
+				GUILayout.FlexibleSpace ();
+				GUILayout.Label ( "Tradingcard Game", labelLeftLargeStyle );
+				GUILayout.FlexibleSpace ();
+				
+				GUILayout.EndHorizontal ();
+				GUILayout.BeginHorizontal ();
+				
+				GUILayout.FlexibleSpace ();
+				GUILayout.Label ( "Because OSX 10.10 Doesn't Run Games", labelLeftMediumStyle );
+				GUILayout.FlexibleSpace ();
+				GUILayout.EndHorizontal ();
+				GUILayout.Space ( 50 );
+				
+				if ( networkManager.connectionType == NetworkManager.ConnectionType.None )
+				{
+				
+					GUILayout.BeginHorizontal ();
+					GUILayout.FlexibleSpace ();
+				
+					if ( GUILayout.Button ( "Play", buttonLargeStyle, GUILayout.Width ( 350 )))
+					{
+						
+						if ( play == false )
+						{
+							
+							play = true;
+							options = false;
+							fadeIN = true;
+							GUI.FocusControl ( "" );
+							GUI.FocusWindow ( 2 );
+						} else {
+							
+							fadeOUT = true;
+							fadeIN = false;
+						}
+					}
+					
+					if ( GUILayout.Button ( "Options", buttonLargeStyle, GUILayout.Width ( 350 )))
+					{
+						
+						if ( options == false )
+						{
+						
+							options = true;
+							play = false;
+							fadeIN = true;
+							GUI.FocusControl ( "" );
+							GUI.FocusWindow ( 3 );
+						} else {
+					
+							fadeOUT = true;
+							fadeIN = false;
+						}
+					}
+				
+					GUILayout.FlexibleSpace ();
+					GUILayout.EndHorizontal ();
+				}
 			
-			GUILayout.EndHorizontal ();
-			GUILayout.BeginHorizontal ();
-			
-			GUILayout.FlexibleSpace ();
-			GUILayout.Label ( "Because OSX 10.10 Doesn't Run Games", labelLeftMediumStyle );
-			GUILayout.FlexibleSpace ();
-			GUILayout.EndHorizontal ();
-			GUILayout.Space ( 50 );
+				GUILayout.EndVertical ();
+				GUILayout.EndArea ();
+			}
+
+#endregion
+		
+			GUI.color = guicolor;
 			
 			if ( networkManager.connectionType == NetworkManager.ConnectionType.None )
 			{
 			
-				GUILayout.BeginHorizontal ();
-				GUILayout.FlexibleSpace ();
-			
-				if ( GUILayout.Button ( "Play", buttonLargeStyle, GUILayout.Width ( 350 )))
+				if ( play == true  )
 				{
 					
-					if ( play == false )
-					{
-						
-						play = true;
-						options = false;
-						fadeIN = true;
-						GUI.FocusControl ( "" );
-						GUI.FocusWindow ( 2 );
-					} else {
-						
-						fadeOUT = true;
-						fadeIN = false;
-					}
+					GUILayout.Window ( 2, controlWindowRect, PlayWindow, "", windowStyle );
 				}
 				
-				if ( GUILayout.Button ( "Options", buttonLargeStyle, GUILayout.Width ( 350 )))
+				if ( options == true )
 				{
 					
-					if ( options == false )
-					{
-					
-						options = true;
-						play = false;
-						fadeIN = true;
-						GUI.FocusControl ( "" );
-						GUI.FocusWindow ( 3 );
-					} else {
-				
-						fadeOUT = true;
-						fadeIN = false;
-					}
+					GUILayout.Window ( 3, controlWindowRect, OptionsWindow, "", windowStyle );
 				}
-			
-				GUILayout.FlexibleSpace ();
-				GUILayout.EndHorizontal ();
-			}
-		
-			GUILayout.EndVertical ();
-			GUILayout.EndArea ();
-		}
-		
-#endregion
-#region Windows
-		
-		GUI.color = guicolor;
-		
-		if ( networkManager.connectionType == NetworkManager.ConnectionType.None )
-		{
-		
-			if ( play == true  )
-			{
-				
-				GUILayout.Window ( 2, controlWindowRect, PlayWindow, "", windowStyle );
 			}
 			
-			if ( options == true )
+			if ( networkManager.hosting == true )
 			{
 				
-				GUILayout.Window ( 3, controlWindowRect, OptionsWindow, "", windowStyle );
-			}
-		}
-		
-		if ( networkManager.hosting == true )
-		{
-			
-			if ( networkManager.connectionType == NetworkManager.ConnectionType.Playing )
-			{
-			
-				GUILayout.Window ( 5, gameWindowRect, GameWindow, "", emptyStyle );
-			} else {
+				if ( networkManager.connectionType == NetworkManager.ConnectionType.Playing )
+				{
 				
-				GUILayout.Window ( 4, controlWindowRect, HostingWindow, "", windowStyle );
+					GUILayout.Window ( 5, gameWindowRect, GameWindow, "", emptyStyle );
+				} else {
+					
+					GUILayout.Window ( 4, controlWindowRect, HostingWindow, "", windowStyle );
+				}
 			}
 		}
 		
 		GUI.color = Color.white;
-		
-#endregion
-		
 		GUI.SetNextControlName ( "" );
+	}
+	
+	
+	void StartupWindow ( int windowID )
+	{
+		
+		GUILayout.BeginVertical ();
+		GUILayout.BeginHorizontal ();
+		
+		GUILayout.FlexibleSpace ();
+		GUILayout.Label ( "TradingCard Game", labelMiddleLargeStyle );
+		GUILayout.FlexibleSpace ();
+		
+		GUILayout.EndHorizontal ();
+		
+		startupWindowScrollPosition = GUILayout.BeginScrollView ( startupWindowScrollPosition, false, false );
+		GUILayout.FlexibleSpace ();
+		
+		for ( int index = 0; index < debugLog.debugLog.Count; index += 1 )
+		{
+			
+			GUILayout.Label ( debugLog.debugLog[index] );
+		}
+		
+		if ( externalInformation.startup == false )
+		{
+			
+			if ( GUILayout.Button ( "Click to Continue", buttonLargeStyle ))
+			{
+				
+				Screen.SetResolution ( 1617, 910, false );
+				startMenu = true;
+			}
+		} else {
+			
+			startupWindowScrollPosition.y = Mathf.Infinity;
+		}
+			
+		GUILayout.EndScrollView ();
+
+		GUILayout.FlexibleSpace ();
+		GUILayout.EndVertical ();
+		
+		GUI.FocusWindow ( 0 );
 	}
 	
 	
@@ -396,14 +471,16 @@ public class UserInterface : MonoBehaviour
 			{
 				
 				UnityEngine.Debug.Log ( "\nSaving Server [" + directIP + ", " + directPort + ", " + directName + "]" );
-				if ( externalInformation.SaveServer ( directIP, directPort, directName ))
+				externalInformation.SaveServer ( directIP, directPort, directName );
+				
+				/*if ( externalInformation.SaveServer ( directIP, directPort, directName ))
 				{
 					
 					UnityEngine.Debug.Log ( "\tServer Saved Successfully" );
 				} else {
 					
 					UnityEngine.Debug.LogError ( "\tUnable to Save Server" );
-				}
+				}*/
 			}
 			if ( GUILayout.Button ( "Connect", buttonSmallStyle ))
 			{
@@ -476,14 +553,16 @@ public class UserInterface : MonoBehaviour
 					{
 						
 						UnityEngine.Debug.Log ( "\nDeleting Server " + savedServer.name + " (" + savedServer.index + ")" );
-						if ( externalInformation.RemoveSavedServer ( savedServer.index ))
+						externalInformation.RemoveSavedServer ( savedServer.index );
+						
+						/*if ( externalInformation.RemoveSavedServer ( savedServer.index ))
 						{
 							
 							UnityEngine.Debug.Log ( "\tServer Deleted Successfully" );
 						} else {
 							
 							UnityEngine.Debug.LogError ( "\tUnable to Delete Server" );
-						}
+						}*/
 					}
 					GUILayout.EndHorizontal ();
 				}

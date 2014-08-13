@@ -4,6 +4,7 @@ using System.Xml;
 using System.Net;
 using UnityEngine;
 using System.Linq;
+using System.Threading;
 using System.Collections;
 using System.Xml.Serialization;
 using System.Collections.Generic;
@@ -53,16 +54,34 @@ public class SavedServer
 public class ExternalInformation : MonoBehaviour
 {
 	
+	DebugLog debugLog;
+	DeckManager deckManager;
+	
+	internal bool startup = true;
+	
 	internal OfficialServerList officialServerList = new OfficialServerList ();
 	internal SavedServerList savedServerList = new SavedServerList ();
 	
 	string macPath = Path.DirectorySeparatorChar + "Users" + Path.DirectorySeparatorChar  + Environment.UserName + Path.DirectorySeparatorChar + "Library" + Path.DirectorySeparatorChar  + "Application Support" + Path.DirectorySeparatorChar + "2Cat Studios" + Path.DirectorySeparatorChar + "TradingCardGame" + Path.DirectorySeparatorChar;
 	string windowsPath = Environment.GetFolderPath ( Environment.SpecialFolder.CommonApplicationData ) + Path.DirectorySeparatorChar + "2Cat Studios" + Path.DirectorySeparatorChar + "TradingCardGame" + Path.DirectorySeparatorChar;
 	string path;
-	string supportPath;
+	string cardsPath;
+	
+	bool localDirectories = false;
+	bool savedServers = false;
+	bool officialServers = false;
+	bool masterDeck = false;
+	bool cards = false;
 	
 	void Start ()
 	{
+		
+		Screen.SetResolution ( 772, 360, false );
+		
+		debugLog = GameObject.FindGameObjectWithTag ( "DebugLog" ).GetComponent<DebugLog>();
+		deckManager = GameObject.FindGameObjectWithTag ( "DeckManager" ).GetComponent<DeckManager>();
+		
+		debugLog.debugLog.Add ( "Startup Process Running\n\n" );
 		
 		if ( Environment.OSVersion.ToString ().Substring ( 0, 4 ) == "Unix" )
 		{
@@ -75,108 +94,115 @@ public class ExternalInformation : MonoBehaviour
 			UnityEngine.Debug.Log ( "Client running on Windows OS" );
 		}
 		
+		cardsPath = path + "Cards" + Path.DirectorySeparatorChar;
+		
 		UnityEngine.Debug.Log ( "Application Size: " + Screen.width + " x " + Screen.height );
 		UnityEngine.Debug.Log ( "Screen Size: " + Screen.currentResolution.width + " x " + Screen.currentResolution.height );
-		UnityEngine.Debug.Log ( "Refresh Rate (If Obtainable): " + Screen.currentResolution.refreshRate );
+		UnityEngine.Debug.Log ( "Refresh Rate (0 If not Obtainable): " + Screen.currentResolution.refreshRate );
 		
-		UnityEngine.Debug.Log ( "\nInitializing Local Directories" );
-		if ( SetupLocalDirectories ())
-		{
-			
-			UnityEngine.Debug.Log ( "\tLocal Directories Setup Successfully" );
-		} else {
-			
-			UnityEngine.Debug.LogError ( "\tUnable to Setup Local Directories" );
-		}
 		
-		UnityEngine.Debug.Log ( "\nLoading Saved Servers" );
-		if ( FetchSavedServers ())
-		{
-			
-			UnityEngine.Debug.Log ( "\tSaved Servers Index Loaded Successfully" );
-		} else {
-			
-			UnityEngine.Debug.LogError ( "\tUnable to Load Saved Servers" );
-		}
+		Thread setupLocalDirectoriesThread = new Thread ( new ThreadStart ( SetupLocalDirectories ));
+		setupLocalDirectoriesThread.Start ();
 		
-		UnityEngine.Debug.Log ( "\nInitialize MasterDeck" );
-		if ( InitializeMasterDeck ())
-		{
-			
-			UnityEngine.Debug.Log ( "\tMasterDeck Updated" );
-		} else {
-			
-			UnityEngine.Debug.LogError ( "\tUnable to Update MasterDeck" );
-		}
-		
-		UnityEngine.Debug.Log ( "\nDownloading Official Server Index" );
-		if ( FetchOfficialServers ())
-		{
-			
-			UnityEngine.Debug.Log ( "\tOfficial Server Index Loaded Successfully" );
-		} else {
-			
-			UnityEngine.Debug.LogError ( "\tUnable to Download Official Server Index" );
-		}
-		
-		UnityEngine.Debug.Log ( "\nStartup Completed" );
+		StartCoroutine ( AwaitStartup ());
 	}
 	
 	
-	bool SetupLocalDirectories ()
+	IEnumerator AwaitStartup ()
 	{
 		
-		supportPath = path + "Support" + Path.DirectorySeparatorChar;
-		
-		if ( !Directory.Exists ( supportPath ))
+		while ( true )
 		{
 			
-			Directory.CreateDirectory ( supportPath );
-			UnityEngine.Debug.Log ( "\tSupport Path has been created" );
-		} else {
+			if ( localDirectories == true & savedServers == true & officialServers == true & masterDeck == true && cards == true )
+			{
 			
-			UnityEngine.Debug.Log ( "\tSupport Path exists" );
+				UnityEngine.Debug.Log ( "\nStartup Completed" );
+	
+				startup = false;
+				yield break;
+			}
+			
+			yield return null;
 		}
-		
-		return true;
 	}
 	
 	
-	bool FetchSavedServers ()
+	void SetupLocalDirectories ()
 	{
 		
-		if ( File.Exists ( supportPath + "SavedServers.xml" ))
+		debugLog.ReceiveMessage ( "\nInitializing Local Directories" );
+		
+		Thread.Sleep ( 500 );
+		
+		if ( !Directory.Exists ( cardsPath ))
+		{
+			
+			Directory.CreateDirectory ( cardsPath );
+		}
+		
+		if ( !Directory.Exists ( path ))
+		{
+			
+			Directory.CreateDirectory ( path );
+		}
+		
+		debugLog.ReceiveMessage ( "\tGame Directories have been Created" );
+		
+		localDirectories = true;
+		debugLog.ReceiveMessage ( "\tLocal Directories Setup Successfully" );
+		
+		Thread loadSavedServersThread = new Thread (() => FetchSavedServers ( true ));
+		loadSavedServersThread.Start ();
+	}
+	
+	
+	void FetchSavedServers ( bool delay )
+	{
+		
+		if ( delay == true )
+		{
+			
+			Thread.Sleep ( 500 );
+		}
+		
+		debugLog.ReceiveMessage ( "\nLoading Saved Servers" );
+		
+		if ( File.Exists ( path + "SavedServers.xml" ))
 		{
 			
 			try
 			{
 				
-				UnityEngine.Debug.Log ( "\tReading Saved Servers" );
+				debugLog.ReceiveMessage ( "\tReading Saved Servers" );
 				
-				System.IO.StreamReader streamReader = new System.IO.StreamReader ( supportPath + "SavedServers.xml" );
+				System.IO.StreamReader streamReader = new System.IO.StreamReader ( path + "SavedServers.xml" );
 				string xml = streamReader.ReadToEnd();
 				streamReader.Close();
 				
-				UnityEngine.Debug.Log ( "\t\tRead into Memory" );
+				debugLog.ReceiveMessage ( "\t\tRead into Memory" );
 		
 				savedServerList = xml.DeserializeXml<SavedServerList>();
 				
-				UnityEngine.Debug.Log ( "\t\tDeserialized" );
+				debugLog.ReceiveMessage ( "\t\tDeserialized" );
 			} catch ( Exception e )
 			{
 					
-				UnityEngine.Debug.LogError ( "\tERROR: " + e );
+				debugLog.ReceiveMessage ( "\tERROR: " + e );
 			}
 		} else {
 			
-			UnityEngine.Debug.LogWarning ( "\tNo Saved Servers Found" );
+			debugLog.ReceiveMessage ( "\tNo Saved Servers Found" );
 		}
 		
-		return true;
+		savedServers = true;
+		
+		Thread downloadingOfficialServerIndexThread = new Thread ( new ThreadStart ( FetchOfficialServers ));
+		downloadingOfficialServerIndexThread.Start ();
 	}
 	
 	
-	internal bool SaveServer ( string ip, string port, string name )
+	internal void SaveServer ( string ip, string port, string name )
 	{
 		
 		try {
@@ -184,12 +210,12 @@ public class ExternalInformation : MonoBehaviour
 			savedServerList.savedServers.Clear ();
 			UnityEngine.Debug.Log ( "\tSaved Servers Cleared from Memory" );
 		
-			if ( File.Exists ( supportPath + "SavedServers.xml" ))
+			if ( File.Exists ( path + "SavedServers.xml" ))
 			{
 				
 				UnityEngine.Debug.Log ( "\tReading Current Saved Servers to Memory" );
 				
-				System.IO.StreamReader streamReader = new System.IO.StreamReader ( supportPath + "SavedServers.xml" );
+				System.IO.StreamReader streamReader = new System.IO.StreamReader ( path + "SavedServers.xml" );
 				string xml = streamReader.ReadToEnd();
 				streamReader.Close();
 				
@@ -220,7 +246,7 @@ public class ExternalInformation : MonoBehaviour
 			UnityEngine.Debug.Log ( "\tNew Server Added to Memory" );
 			
 			XmlSerializer serializer = new XmlSerializer ( savedServerList.GetType ());
-			StreamWriter writer = new StreamWriter ( supportPath + "SavedServers.xml" );
+			StreamWriter writer = new StreamWriter ( path + "SavedServers.xml" );
 			serializer.Serialize ( writer.BaseStream, savedServerList );
 			
 			UnityEngine.Debug.Log ( "\tUpdated Saved Servers List Written to Disk" );
@@ -229,21 +255,18 @@ public class ExternalInformation : MonoBehaviour
 		{
 			
 			UnityEngine.Debug.LogError ( "\tERROR: " + e );
-			return false;
 		}
-		
-		return true;
 	}
 	
 	
-	internal bool RemoveSavedServer ( int index )
+	internal void RemoveSavedServer ( int index )
 	{
 		
 		XmlDocument doc = new XmlDocument();
 		
 		UnityEngine.Debug.Log ( "\tReading Saved Server List into Memory" );
 		
-		System.IO.StreamReader streamReader = new System.IO.StreamReader ( supportPath + "SavedServers.xml" );
+		System.IO.StreamReader streamReader = new System.IO.StreamReader ( path + "SavedServers.xml" );
 		string xml = streamReader.ReadToEnd();
 		streamReader.Close();
 		
@@ -264,110 +287,118 @@ public class ExternalInformation : MonoBehaviour
 			
 			UnityEngine.Debug.Log ( "\t\tServer Removed" );
 			
-			doc.Save ( supportPath + "SavedServers.xml" );
+			doc.Save ( path + "SavedServers.xml" );
 			
 			UnityEngine.Debug.Log ( "\tLoading Updated Saved Servers" );
-			if ( FetchSavedServers ())
-			{
-			
-				UnityEngine.Debug.Log ( "\tSaved Servers Index Loaded Successfully" );
-			} else {
-			
-				UnityEngine.Debug.LogError ( "\tUnable to Load Saved Servers" );
-			}
+			FetchSavedServers ( false );
 		} else {
 			
 			UnityEngine.Debug.LogError ( "\t\tUnable to Locate Node" );
-			
-			return false;
 		}
-		
-		return true;
 	}
 	
 	
-	bool InitializeMasterDeck ()
+	void FetchOfficialServers ()
 	{
 		
-		try
-		{
-				
-			if ( !File.Exists ( supportPath + "MasterDeck.xml" ))
-			{
-				
-				UnityEngine.Debug.Log ( "\tLocal MasterDeck does not Exist" );
-				
-				Uri url = new Uri ( "http://2catstudios.github.io/TradingCardGame/MasterDeck.xml" );
-				using ( WebClient wClient = new WebClient ())
-				{
-					
-					wClient.DownloadFile ( url, supportPath + "MasterDeck.xml" );
-				}
-				
-				UnityEngine.Debug.Log ( "\tMasterDeck Downloaded Successfully" );
-				
-			} else if ( false == true ) {
-				
-				//Confirm Deck Version
-				
-				UnityEngine.Debug.Log ( "\tLocal MasterDeck exists. Checking Version" );
-				
-			}
-		} catch ( Exception e ) {
+		Thread.Sleep ( 1000 );
 		
-			UnityEngine.Debug.LogError ( "\tERROR: " + e );
-			return false;
-		}
-		
-		/*System.IO.StreamReader deckReader = new System.IO.StreamReader ( supportPath + "MasterDeck.xml" );
-		string deckXML = deckReader.ReadToEnd();
-		deckReader.Close();*/
-	
-		UnityEngine.Debug.Log ( "\t\tRead into Memory" );
-		
-		//officialServerList = deckXML.DeserializeXml<OfficialServerList>();
-		
-		UnityEngine.Debug.Log ( "\t\tDeserialized" );
-		
-		return true;
-	}
-	
-	
-	bool FetchOfficialServers ()
-	{
-		
-		if ( File.Exists ( supportPath + "OfficialServers.xml" ))
-		{
-			
-			File.Delete ( supportPath + "OfficialServers.xml" );
-			UnityEngine.Debug.Log ( "\tOld Official Server List Deleted" );
-		}
-		
+		debugLog.ReceiveMessage ( "\nDownloading Official Server Index" );
+
 		try {
 			
-			Uri url = new Uri ( "http://2catstudios.github.io/TradingCardGame/OfficialServers.xml" );
-			using ( WebClient client = new WebClient ())
-			{
-					
-				client.DownloadFile ( url, supportPath + "OfficialServers.xml" );
-			}
-			UnityEngine.Debug.Log ( "\tOfficial Server Log Downloaded" );
-	    	
-			System.IO.StreamReader streamReader = new System.IO.StreamReader ( supportPath + "OfficialServers.xml" );
-			string xml = streamReader.ReadToEnd();
-			streamReader.Close();
+			StreamReader streamReader = new StreamReader ( WebRequest.Create ( "http://2catstudios.github.io/TradingCardGame/OfficialServers.xml" ).GetResponse ().GetResponseStream ());
+			string xml = streamReader.ReadToEnd ();
 			
-			UnityEngine.Debug.Log ( "\t\tRead into Memory" );
+			debugLog.ReceiveMessage ( "\t\tRead into Memory" );
 			
 			officialServerList = xml.DeserializeXml<OfficialServerList>();
 			
-			UnityEngine.Debug.Log ( "\t\tDeserialized" );
+			debugLog.ReceiveMessage ( "\t\tDeserialized" );
 		} catch ( Exception e ) {
 			
-			UnityEngine.Debug.LogError ( "\tERROR: " + e );
-			return false;
+			debugLog.ReceiveMessage ( "\tERROR: " + e );
 		}
 		
-		return true;
+		officialServers = true;
+		
+		Thread downloadMasterDeckThread = new Thread ( new ThreadStart ( DownloadMasterDeck ));
+		downloadMasterDeckThread.Start ();
+	}
+	
+	
+	void DownloadMasterDeck ()
+	{
+		
+		Thread.Sleep ( 1000 );
+		
+		debugLog.ReceiveMessage ( "\nDownloading MasterDeck" );
+		
+		try
+		{
+			
+			StreamReader reader = new StreamReader ( WebRequest.Create ( "http://2catstudios.github.io/TradingCardGame/MasterDeck.xml" ).GetResponse ().GetResponseStream ());
+			string deckXML = reader.ReadToEnd ();
+			
+			debugLog.ReceiveMessage ( "\t\tDownloaded and Read into Memory" );
+			deckManager.masterDeck = deckXML.DeserializeXml<MasterDeck>();
+			UnityEngine.Debug.Log ( "\t\tDeserialized" );
+			
+		} catch ( Exception e ) {
+			
+			debugLog.ReceiveMessage ( "\tERROR: " + e );
+		}
+		
+		masterDeck = true;
+		
+	    Thread initializeCardsThread = new Thread ( new ThreadStart ( InitializeCards ));
+		initializeCardsThread.Start ();
+	}
+	
+	
+	void InitializeCards ()
+	{
+		
+		Thread.Sleep ( 2000 );
+		
+		debugLog.ReceiveMessage ( "\nInitialize Cards" );
+		debugLog.ReceiveMessage ( "\tVerifying " + deckManager.masterDeck.cards.Length + " Cards" );
+		
+		int index = 0;
+		while ( index < deckManager.masterDeck.cards.Length )
+		{
+			
+			debugLog.ReceiveMessage ( "\t\tVerifying " + index + " of " + deckManager.masterDeck.cards.Length );
+			if ( !File.Exists ( cardsPath + deckManager.masterDeck.cards[index].cardIdentifier + ".png" ))
+			{
+				
+				debugLog.ReceiveMessage ( "\t\t\tCard Does not Exist" );
+				
+				try
+				{
+				
+					using ( WebClient webClient = new WebClient ())
+					{
+						
+						debugLog.ReceiveMessage ( "\t\t\tDownloading Card" );
+						webClient.DownloadFile (( "http://2catstudios.github.io/TradingCardGame/Cards/" + deckManager.masterDeck.cards[index].cardIdentifier + ".png" ), ( cardsPath + deckManager.masterDeck.cards[index].cardIdentifier + ".png" ));
+						debugLog.ReceiveMessage ( "\t\t\t" + deckManager.masterDeck.cards[index].cardIdentifier + " Download Successfully" );
+					}
+				} catch ( Exception e )
+				{
+					
+					debugLog.ReceiveMessage ( "\t\tERROR: " + e );
+				}
+			} else {
+				
+				debugLog.ReceiveMessage ( "\t\t\tCard Exists" );
+			}
+			
+			index += 1;
+		}
+		
+		debugLog.ReceiveMessage ( "\tAll Cards Found/Downloaded" );
+		
+		cards = true;
 	}
 }

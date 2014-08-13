@@ -3,34 +3,48 @@ using UnityEngine;
 using System.Collections;
 using System.Xml.Serialization;
 //Written by Michael Bethke
+[XmlRoot ( "MasterDeck" )]
+public class MasterDeck
+{
+	
+	[XmlAttribute ( "version" )]
+	public String deckVersion;
+
+	[XmlElement ( "Card" )]
+	public Card[] cards;
+}
+
+
+public class Card
+{
+
+	[XmlAttribute ( "identifier" )]
+	public String cardIdentifier;
+	
+	public String name;
+	public String hitPoints;
+	public String focus;
+	
+	[XmlElement("Action")]
+	public Action action;
+}
+
+
+public class Action
+{
+	
+	public String name;
+	public String baseEffect;
+	public String chance;
+	
+	[XmlAttribute ( "operation" )]
+	public String operation;
+}
+
 public class DeckManager : MonoBehaviour
 {
 
-	[XmlRoot("MasterDeck")]
-	public class MasterDeck
-	{
-		
-		[XmlAttribute ( "version" )]
-		public String deckVersion;
-	
-		[XmlElement("Card")]
-		public Card[] cards;
-	}
-
-
-	public class Card
-	{
-	
-		[XmlAttribute ( "version" )]
-		public String cardVersion;
-		
-		public String element;
-		public String hitPoints;
-		public String focus;
-		
-		[XmlElement("Action")]
-		public Action action;
-	}
+	internal MasterDeck masterDeck = new MasterDeck ();
 }
 
 /*
