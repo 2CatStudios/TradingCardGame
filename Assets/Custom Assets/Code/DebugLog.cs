@@ -6,6 +6,8 @@ using System.Collections.Generic;
 public class DebugLog : MonoBehaviour
 {
 	
+	UserInterface userInterface;
+	
 	public bool debugLogActive = false;
 	
 	internal List<String> debugLog = new List<String> ();
@@ -13,6 +15,8 @@ public class DebugLog : MonoBehaviour
 
 	void Start ()
 	{
+		
+		userInterface = GameObject.FindGameObjectWithTag ( "UserInterface" ).GetComponent<UserInterface>();
 	
 		if ( debugLogActive == true )
 		{
@@ -50,5 +54,6 @@ public class DebugLog : MonoBehaviour
 	{
 		
 		debugLog.Add ( logString + " (" + type + ")" );
+		userInterface.debugScrollPosition.y = Mathf.Infinity;
 	}
 }

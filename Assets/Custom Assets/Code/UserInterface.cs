@@ -5,6 +5,9 @@ public class UserInterface : MonoBehaviour
 {
 	
 	DebugLog debugLog;
+	DeckManager deckManager;
+	ServersManager serversManager;
+	PreferencesManager preferencesManager;
 	ExternalInformation externalInformation;
 	NetworkManager networkManager;
 	LoadingImage loadingImage;
@@ -32,8 +35,12 @@ public class UserInterface : MonoBehaviour
 	GUIStyle hiddenLargeStyle;
 	GUIStyle hiddenMediumStyle;
 	GUIStyle hiddenSmallStyle;
+	
+	Color guicolor;
+	
 
 	bool startMenu = false;
+	
 	
 	bool play = false;
 	bool hostSection = false;
@@ -48,12 +55,13 @@ public class UserInterface : MonoBehaviour
 	bool savedServerSection = false;
 	
 	bool options = false;
-	string playerName = "Ember";
+
 	
-	Color guicolor;
-	Vector2 scrollView;
-	Vector2 scrollPosition;
+	internal Vector2 debugScrollPosition;
 	Vector2 startupWindowScrollPosition;
+	Vector2 optionsWindowScrollView;
+	Vector2 playWindowScrollView;
+	
 	bool fadeIN = false;
 	bool fadeOUT = false;
 	
@@ -62,9 +70,13 @@ public class UserInterface : MonoBehaviour
 	{
 		
 		debugLog = GameObject.FindGameObjectWithTag ( "DebugLog" ).GetComponent<DebugLog>();
+		deckManager = GameObject.FindGameObjectWithTag ( "Manager" ).GetComponent<DeckManager>();
+		serversManager = GameObject.FindGameObjectWithTag ( "Manager" ).GetComponent<ServersManager>();
+		preferencesManager = GameObject.FindGameObjectWithTag ( "Manager" ).GetComponent<PreferencesManager>();
 		externalInformation = GameObject.FindGameObjectWithTag ( "ExternalInformation" ).GetComponent<ExternalInformation>();
 		networkManager = GameObject.FindGameObjectWithTag ( "NetworkManager" ).GetComponent<NetworkManager>();
 		loadingImage = gameObject.GetComponent<LoadingImage>();
+		
 	
 		homePaneRect = new Rect ( 0, 0, Screen.width, Screen.height );
 		controlWindowRect = new Rect ( Screen.width/2 - 386, 204, 772, 360 );
@@ -224,7 +236,7 @@ public class UserInterface : MonoBehaviour
 			
 			GUI.skin = guiskin;
 			GUILayout.BeginArea ( new Rect ( 0, 0, Screen.width, Screen.height ));
-			scrollPosition = GUILayout.BeginScrollView ( scrollPosition, false, false, GUILayout.Width ( Screen.width ), GUILayout.Height ( Screen.height ));
+			debugScrollPosition = GUILayout.BeginScrollView ( debugScrollPosition, false, false, GUILayout.Width ( Screen.width ), GUILayout.Height ( Screen.height ));
 			GUILayout.FlexibleSpace ();
 			
 			for ( int index = 0; index < debugLog.debugLog.Count; index += 1 )
@@ -232,8 +244,6 @@ public class UserInterface : MonoBehaviour
 				
 				GUILayout.Label ( debugLog.debugLog[index] );
 			}
-			
-			scrollPosition.y = Mathf.Infinity;
 				
 			GUILayout.EndScrollView ();
 			GUILayout.EndArea ();
@@ -406,7 +416,7 @@ public class UserInterface : MonoBehaviour
 	void PlayWindow ( int windowID )
 	{
 		
-		scrollView = GUILayout.BeginScrollView ( scrollView, GUILayout.Width ( controlWindowRect.width ), GUILayout.Height ( controlWindowRect.height ));
+		playWindowScrollView = GUILayout.BeginScrollView ( playWindowScrollView, GUILayout.Width ( controlWindowRect.width ), GUILayout.Height ( controlWindowRect.height ));
 		
 		GUILayout.BeginVertical ();
 		
@@ -472,15 +482,6 @@ public class UserInterface : MonoBehaviour
 				
 				UnityEngine.Debug.Log ( "\nSaving Server [" + directIP + ", " + directPort + ", " + directName + "]" );
 				externalInformation.SaveServer ( directIP, directPort, directName );
-				
-				/*if ( externalInformation.SaveServer ( directIP, directPort, directName ))
-				{
-					
-					UnityEngine.Debug.Log ( "\tServer Saved Successfully" );
-				} else {
-					
-					UnityEngine.Debug.LogError ( "\tUnable to Save Server" );
-				}*/
 			}
 			if ( GUILayout.Button ( "Connect", buttonSmallStyle ))
 			{
@@ -508,7 +509,7 @@ public class UserInterface : MonoBehaviour
 		if ( officialConnectSection == true )
 		{
 		
-			foreach ( OfficialServer officialServer in externalInformation.officialServerList.officialServers )
+			foreach ( OfficialServer officialServer in serversManager.officialServerList.officialServers )
 			{
 				
 				if ( GUILayout.Button ( officialServer.name, buttonMediumStyle ))
@@ -520,7 +521,7 @@ public class UserInterface : MonoBehaviour
 		}
 		
 		
-		if ( externalInformation.savedServerList.savedServers != null && externalInformation.savedServerList.savedServers.Count > 0 )
+		if ( serversManager.savedServerList.savedServers != null && serversManager.savedServerList.savedServers.Count > 0 )
 		{
 				
 			GUILayout.Space ( 40 );
@@ -539,7 +540,7 @@ public class UserInterface : MonoBehaviour
 			if ( savedServerSection == true )
 			{
 				
-				foreach ( SavedServer savedServer in externalInformation.savedServerList.savedServers )
+				foreach ( SavedServer savedServer in serversManager.savedServerList.savedServers )
 				{
 					
 					GUILayout.BeginHorizontal ();
@@ -554,15 +555,6 @@ public class UserInterface : MonoBehaviour
 						
 						UnityEngine.Debug.Log ( "\nDeleting Server " + savedServer.name + " (" + savedServer.index + ")" );
 						externalInformation.RemoveSavedServer ( savedServer.index );
-						
-						/*if ( externalInformation.RemoveSavedServer ( savedServer.index ))
-						{
-							
-							UnityEngine.Debug.Log ( "\tServer Deleted Successfully" );
-						} else {
-							
-							UnityEngine.Debug.LogError ( "\tUnable to Delete Server" );
-						}*/
 					}
 					GUILayout.EndHorizontal ();
 				}
@@ -582,12 +574,35 @@ public class UserInterface : MonoBehaviour
 		
 		GUILayout.Label ( "Options", labelLeftLargeStyle );
 		
+
 		GUILayout.BeginHorizontal ();
-		GUILayout.Label ( "PlayerName: ", labelLeftMediumStyle );
-		playerName = GUILayout.TextField ( playerName, 12, textFieldStyle, GUILayout.MinWidth ( 120 ));
+		if ( GUILayout.Button ( "Save", buttonMediumStyle ))
+		{
+			
+			externalInformation.WritePreferences ();
+		}
+		
+		if ( GUILayout.Button ( "Revert", buttonMediumStyle ))
+		{
+			
+			externalInformation.ReadPreferences ();
+		}
+		
 		GUILayout.FlexibleSpace ();
 		GUILayout.EndHorizontal ();
-	
+		GUILayout.Label ( "", labelLeftSmallStyle );
+		
+		
+		optionsWindowScrollView = GUILayout.BeginScrollView ( optionsWindowScrollView );
+		
+		GUILayout.BeginHorizontal ();
+		GUILayout.Label ( "PlayerName: ", labelLeftMediumStyle );
+		preferencesManager.preferences.playerName = GUILayout.TextField ( preferencesManager.preferences.playerName, 12, textFieldStyle, GUILayout.Width ( 120 ));
+		
+		GUILayout.FlexibleSpace ();
+		GUILayout.EndHorizontal ();
+		
+		GUILayout.EndScrollView ();
 		GUILayout.EndVertical ();
 	}
 	
@@ -616,13 +631,13 @@ public class UserInterface : MonoBehaviour
 			if ( networkManager.hosting == true && networkManager.connectionType == NetworkManager.ConnectionType.Connected )
 			{
 				
-				GUILayout.Label ( playerName + " VS " + networkManager.opponentName, labelMiddleLargeStyle );
+				GUILayout.Label ( preferencesManager.preferences.playerName + " VS " + networkManager.opponentName, labelMiddleLargeStyle );
 				
 				GUILayout.BeginHorizontal ();
 				GUILayout.FlexibleSpace ();
 				GUILayout.Label ( "Match length: Indefinite", labelLeftMediumStyle );
 				GUILayout.FlexibleSpace ();
-				GUILayout.Label ( "Cards in MasterDeck: 0", labelLeftMediumStyle );
+				GUILayout.Label ( "Cards in MasterDeck: " + deckManager.masterDeck.cards.Length, labelLeftMediumStyle );
 				GUILayout.FlexibleSpace ();
 				GUILayout.EndHorizontal ();
 				
