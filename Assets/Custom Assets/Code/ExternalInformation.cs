@@ -131,8 +131,6 @@ public class ExternalInformation : MonoBehaviour
 		ReadPreferences ();
 		debugLog.ReceiveMessage ( "\tPreferences Loaded" );
 		
-		debugLog.ReceiveMessage ( "\tGame Directories have been Created" );
-		
 		localDirectories = true;
 		debugLog.ReceiveMessage ( "\tLocal Directories Setup Successfully" );
 		
@@ -299,7 +297,7 @@ public class ExternalInformation : MonoBehaviour
 				
 				string xml = streamReader.ReadToEnd ();
 			
-				debugLog.ReceiveMessage ( "\t\tRead into Memory" );
+				debugLog.ReceiveMessage ( "\t\tDownloaded and Read into Memory" );
 			
 				serversManager.officialServerList = xml.DeserializeXml<OfficialServerList>();
 			
@@ -390,6 +388,28 @@ public class ExternalInformation : MonoBehaviour
 		}
 		
 		debugLog.ReceiveMessage ( "\tAll Cards Found/Downloaded" );
+		
+		if ( Directory.GetFiles ( cardsPath, "*.png" ).Length > deckManager.masterDeck.cards.Length )
+		{
+			
+			debugLog.ReceiveMessage ( "\tDeleting Old Cards" );
+			
+			int cardIndex = 0;
+			foreach ( string cardImage in Directory.GetFiles ( cardsPath, "*.png" ))
+			{
+				
+				if (  cardImage.Substring ( cardImage.LastIndexOf ( "/" ) + 1, ( cardImage.Length - cardImage.LastIndexOf ( "/" ) - 5 )) != deckManager.masterDeck.cards [cardIndex].cardIdentifier )
+				{
+
+					File.Delete ( cardImage );
+				} else {
+					
+					cardIndex += 1;
+				}
+			}
+			
+			debugLog.ReceiveMessage ( "\t\tOld Cards Deleted" );
+		}
 		
 		cards = true;
 	}
