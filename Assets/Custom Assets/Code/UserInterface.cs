@@ -810,15 +810,43 @@ public class UserInterface : MonoBehaviour
 		GUILayout.FlexibleSpace ();
 		GUILayout.EndHorizontal ();
 		
+		GUILayout.BeginHorizontal ();
+		GUILayout.FlexibleSpace ();
+		foreach ( GameCard card in deckManager.personalDeck.cards )
+		{
+			
+			GUILayout.FlexibleSpace ();
+			GUILayout.Button ( card.image, hiddenCenterSmallStyle );
+			GUILayout.FlexibleSpace ();
+		}
+		GUILayout.FlexibleSpace ();
+		GUILayout.EndHorizontal ();
+		
 		GUILayout.FlexibleSpace ();
 		
 		GUILayout.BeginHorizontal ();
-		
-		GUILayout.Button ( deckManager.masterDeck.supportCards[0].image );
-		
-		GUILayout.EndHorizontal ();
-
+		GUILayout.Button ( deckManager.masterDeck.supportCards[0].image, hiddenCenterSmallStyle );
 		GUILayout.FlexibleSpace ();
+		
+		foreach ( GameCard card in deckManager.masterDeck.gameCards )
+		{
+			
+			GUILayout.Button ( card.image, hiddenCenterSmallStyle );
+		}
+		
+		GUILayout.FlexibleSpace ();
+		GUILayout.BeginVertical ();
+		
+		GUILayout.Label ( preferencesManager.preferences.playerName, labelLeftLargeStyle );
+		GUILayout.Label ( "1000/1000 HP", labelLeftMediumStyle );
+		GUILayout.Label ( "", labelLeftSmallStyle );
+		GUILayout.Label ( deckManager.masterDeck.gameCards.Length + " Cards in MasterDeck", labelLeftMediumStyle );
+		
+		GUILayout.EndVertical ();
+		
+		GUILayout.FlexibleSpace ();
+		GUILayout.EndHorizontal ();
+		
 		GUILayout.EndVertical ();
 	}
 }

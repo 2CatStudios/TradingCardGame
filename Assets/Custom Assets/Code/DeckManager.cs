@@ -18,6 +18,17 @@ public class MasterDeck
 	public GameCard[] gameCards;
 }
 
+[XmlRoot ( "PersonalDeck" )]
+public class PersonalDeck
+{
+	
+	[XmlElement ( "Card" )]
+	public List<String> cardIdentifiers = new List<String> ();
+	
+	[XmlIgnore]
+	public List<GameCard> cards = new List<GameCard> ();
+}
+
 
 public class SupportCard
 {
@@ -59,14 +70,6 @@ public class Action
 	
 	[XmlAttribute ( "operation" )]
 	public String operation;
-}
-
-[XmlRoot ( "PersonalDeck" )]
-public class PersonalDeck
-{
-	
-	[XmlElement ( "Card" )]
-	public List<String> cardIdentifiers = new List<String> ();
 }
 
 

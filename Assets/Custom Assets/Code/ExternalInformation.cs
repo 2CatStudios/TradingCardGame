@@ -12,6 +12,8 @@ using System.Collections.Generic;
 public class ExternalInformation : MonoBehaviour
 {
 	
+	public bool delayThreads = true;
+	
 	DebugLog debugLog;
 	DeckManager deckManager;
 	ServersManager serversManager;
@@ -97,12 +99,23 @@ public class ExternalInformation : MonoBehaviour
 						foreach ( SupportCard card in deckManager.masterDeck.supportCards )
 						{
 				
-							card.image = new Texture2D ( 192, 256, TextureFormat.DXT5, false );
+							card.image = new Texture2D ( 192, 256, TextureFormat.ARGB32, true );
 		
-							WWW supportImageWWW = new WWW ( "file://" + supportCardsPath + card.name + "-" + card.cardVersion + ".png" );
-							yield return supportImageWWW;
+							WWW www = new WWW ( "file://" + supportCardsPath + card.name + "-" + card.cardVersion + ".png" );
+							yield return www;
 				
-							supportImageWWW.LoadImageIntoTexture( card.image );
+							www.LoadImageIntoTexture( card.image );
+						}
+						
+						foreach ( GameCard card in deckManager.masterDeck.gameCards )
+						{
+							
+							card.image = new Texture2D ( 192, 256, TextureFormat.ARGB32, false );
+		
+							WWW www = new WWW ( "file://" + gameCardsPath + card.cardIdentifier + ".png" );
+							yield return www;
+				
+							www.LoadImageIntoTexture( card.image );
 						}
 						
 						UnityEngine.Debug.Log ( "\tDeck Created" );
@@ -121,7 +134,12 @@ public class ExternalInformation : MonoBehaviour
 		
 		debugLog.ReceiveMessage ( "\nInitializing Local Directories" );
 		
-		Thread.Sleep ( 500 );
+		if ( delayThreads == true )
+		{
+			
+			Thread.Sleep ( 500 );
+		}
+		
 		
 		if ( !Directory.Exists ( path ))
 		{
@@ -140,19 +158,6 @@ public class ExternalInformation : MonoBehaviour
 			
 			Directory.CreateDirectory ( supportCardsPath );
 		}
-		
-		if ( !File.Exists ( path + "PersonalDeck.xml" ))
-		{
-			
-			debugLog.ReceiveMessage ( "\tPersonal Deck does not Exist" );
-			
-			WritePersonalDeck ();
-			
-			debugLog.ReceiveMessage ( "\tPersonal Deck Created" );
-		}
-		
-		ReadPersonalDeck ();
-		debugLog.ReceiveMessage ( "\tPersonal Deck Loaded" );
 		
 		if ( !File.Exists ( path + "Preferences.xml" ))
 		{
@@ -182,7 +187,11 @@ public class ExternalInformation : MonoBehaviour
 		if ( delay == true )
 		{
 			
-			Thread.Sleep ( 500 );
+			if ( delayThreads == true )
+			{
+			
+				Thread.Sleep ( 500 );
+			}
 		}
 		
 		if ( File.Exists ( path + "SavedServers.xml" ))
@@ -323,7 +332,11 @@ public class ExternalInformation : MonoBehaviour
 		
 		debugLog.ReceiveMessage ( "\nDownloading Official Server Index" );
 		
-		Thread.Sleep ( 1000 );
+		if ( delayThreads == true )
+		{
+			
+			Thread.Sleep ( 1000 );
+		}
 
 		try {
 			
@@ -355,7 +368,11 @@ public class ExternalInformation : MonoBehaviour
 		
 		debugLog.ReceiveMessage ( "\nDownloading MasterDeck" );
 		
-		Thread.Sleep ( 1000 );
+		if ( delayThreads == true )
+		{
+			
+			Thread.Sleep ( 1000 );
+		}
 		
 		try
 		{
@@ -374,8 +391,39 @@ public class ExternalInformation : MonoBehaviour
 		}
 		
 		masterDeck = true;
+
+		Thread initializePersonalDeckThread = new Thread ( new ThreadStart ( InitializePersonalDeck ));
+		initializePersonalDeckThread.Start ();
+	}
+	
+	
+	void InitializePersonalDeck ()
+	{
 		
-	    Thread initializeCardsThread = new Thread ( new ThreadStart ( InitializeCards ));
+		debugLog.ReceiveMessage ( "\nInitializing Personal Deck" );
+		
+		if ( delayThreads == true )
+		{
+			
+			Thread.Sleep ( 200 );
+		}
+		
+		if ( !File.Exists ( path + "PersonalDeck.xml" ))
+		{
+			
+			debugLog.ReceiveMessage ( "\tPersonal Deck does not Exist" );
+			
+			WritePersonalDeck ();
+			
+			debugLog.ReceiveMessage ( "\tPersonal Deck Created" );
+		}
+		
+		debugLog.ReceiveMessage ( "\tReading Personal Deck" );
+		ReadPersonalDeck ();
+		
+		debugLog.ReceiveMessage ( "\t\tPersonal Deck Loaded" );
+	
+		Thread initializeCardsThread = new Thread ( new ThreadStart ( InitializeCards ));
 		initializeCardsThread.Start ();
 	}
 	
@@ -385,7 +433,11 @@ public class ExternalInformation : MonoBehaviour
 		
 		debugLog.ReceiveMessage ( "\nInitialize Cards" );
 		
-		Thread.Sleep ( 1000 );
+		if ( delayThreads == true )
+		{
+			
+			Thread.Sleep ( 1000 );
+		}
 		
 		debugLog.ReceiveMessage ( "\tVerifying Support Cards [" + deckManager.masterDeck.supportCards.Length + "]" );
 		
@@ -513,6 +565,10 @@ public class ExternalInformation : MonoBehaviour
 	
 	public void WritePersonalDeck ()
 	{
+/*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/		
+		deckManager.personalDeck.cardIdentifiers.Add ( deckManager.masterDeck.gameCards[3].cardIdentifier.Substring ( 0, 2 ));
+		deckManager.personalDeck.cardIdentifiers.Add ( deckManager.masterDeck.gameCards[1].cardIdentifier.Substring ( 0, 2 ));
+/*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/		
 		
 		XmlSerializer serializerPD = new XmlSerializer ( deckManager.personalDeck.GetType ());
 			
@@ -533,6 +589,30 @@ public class ExternalInformation : MonoBehaviour
 			string xmlPD = streamReaderPD.ReadToEnd();
 
 			deckManager.personalDeck = xmlPD.DeserializeXml<PersonalDeck>();
+		}
+		
+		foreach ( String cardID in deckManager.personalDeck.cardIdentifiers )
+		{
+			
+			int searchIndex = 0;
+			bool cardFound = false;
+			while ( cardFound == false )
+			{
+				
+				if ( deckManager.masterDeck.gameCards[searchIndex].cardIdentifier.Substring ( 0, 2 ) == cardID )
+				{
+					
+					debugLog.ReceiveMessage ( deckManager.masterDeck.gameCards[searchIndex].cardIdentifier.Substring ( 0, 2 ) + " == " + cardID );
+					deckManager.personalDeck.cards.Add ( deckManager.masterDeck.gameCards[searchIndex] );
+					
+					cardFound = true;
+				} else {
+				
+					debugLog.ReceiveMessage ( deckManager.masterDeck.gameCards[searchIndex].cardIdentifier.Substring ( 0, 2 ) + " != " + cardID );
+				}
+				
+				searchIndex += 1;
+			}
 		}
 	}
 	
