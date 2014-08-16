@@ -156,7 +156,7 @@ public class ExternalInformation : MonoBehaviour
 			try
 			{
 				
-				debugLog.ReceiveMessage ( "\tReading Saved Servers" );
+				debugLog.ReceiveMessage ( "\tLoading Saved Servers" );
 				
 				StreamReader streamReaderFS = new StreamReader ( path + "SavedServers.xml" );
 				string xmlFS = streamReaderFS.ReadToEnd();
@@ -370,7 +370,7 @@ public class ExternalInformation : MonoBehaviour
 					using ( WebClient webClient = new WebClient ())
 					{
 
-						webClient.DownloadFile (( "http://2catstudios.github.io/TradingCardGame/Cards/" + deckManager.masterDeck.cards[index].cardIdentifier + ".png" ), ( cardsPath + deckManager.masterDeck.cards[index].cardIdentifier + ".png" ));
+						webClient.DownloadFile (( "http://2catstudios.github.io/TradingCardGame/Cards/GameCards/" + deckManager.masterDeck.cards[index].cardIdentifier + ".png" ), ( cardsPath + deckManager.masterDeck.cards[index].cardIdentifier + ".png" ));
 						
 						debugLog.ReceiveMessage ( "\t\t\t" + deckManager.masterDeck.cards[index].cardIdentifier + " Download Successfully" );
 					}

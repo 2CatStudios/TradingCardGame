@@ -17,24 +17,38 @@ public class UserInterface : MonoBehaviour
 	Rect controlWindowRect;
 	Rect gameWindowRect;
 	
-	GUIStyle labelLeftLargeStyle;
-	GUIStyle labelMiddleLargeStyle;
-	GUIStyle labelLeftMediumStyle;
-	GUIStyle labelMiddleMediumStyle;
-	GUIStyle labelLeftSmallStyle;
-	GUIStyle labelMiddleSmallStyle;
 	
-	GUIStyle buttonLargeStyle;
-	GUIStyle buttonMediumStyle;
-	GUIStyle buttonSmallStyle;
+	GUIStyle labelLeftLargeStyle;
+	GUIStyle labelLeftMediumStyle;
+	GUIStyle labelLeftSmallStyle;
+	
+	GUIStyle labelCenterLargeStyle;
+	GUIStyle labelCenterMediumStyle;
+	GUIStyle labelCenterSmallStyle;
+	
+	
+	GUIStyle buttonLeftLargeStyle;
+	GUIStyle buttonLeftMediumStyle;
+	GUIStyle buttonLeftSmallStyle;
+	
+	GUIStyle buttonCenterLargeStyle;
+	GUIStyle buttonCenterMediumStyle;
+	GUIStyle buttonCenterSmallStyle;
+	
 	
 	GUIStyle textFieldStyle;
 	GUIStyle windowStyle;
+	
 	GUIStyle emptyStyle;
 	
-	GUIStyle hiddenLargeStyle;
-	GUIStyle hiddenMediumStyle;
-	GUIStyle hiddenSmallStyle;
+	
+	GUIStyle hiddenCenterLargeStyle;
+	GUIStyle hiddenCenterMediumStyle;
+	GUIStyle hiddenCenterSmallStyle;
+	
+	GUIStyle hiddenLeftLargeStyle;
+	GUIStyle hiddenLeftMediumStyle;
+	GUIStyle hiddenLeftSmallStyle;
 	
 	Color guicolor;
 	
@@ -82,6 +96,7 @@ public class UserInterface : MonoBehaviour
 		controlWindowRect = new Rect ( Screen.width/2 - 386, 204, 772, 360 );
 		gameWindowRect = new Rect ( 0, 0, Screen.width, Screen.height );
 		
+		
 		labelLeftLargeStyle = new GUIStyle ();
 		labelLeftLargeStyle.fontSize = 48;
 		labelLeftLargeStyle.alignment = TextAnchor.MiddleLeft;
@@ -100,53 +115,87 @@ public class UserInterface : MonoBehaviour
 		labelLeftSmallStyle.padding = new RectOffset ( 0, 0, 3, 3 );
 		labelLeftSmallStyle.margin = new RectOffset ( 4, 4, 4, 4 );
 		
-		labelMiddleLargeStyle = new GUIStyle ();
-		labelMiddleLargeStyle.fontSize = 48;
-		labelMiddleLargeStyle.alignment = TextAnchor.MiddleCenter;
-		labelMiddleLargeStyle.padding = new RectOffset ( 0, 0, 3, 3 );
-		labelMiddleLargeStyle.margin = new RectOffset ( 4, 4, 4, 4 );
 		
-		labelMiddleMediumStyle = new GUIStyle ();
-		labelMiddleMediumStyle.fontSize = 24;
-		labelMiddleMediumStyle.alignment = TextAnchor.MiddleCenter;
-		labelMiddleMediumStyle.padding = new RectOffset ( 0, 0, 3, 3 );
-		labelMiddleMediumStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		labelCenterLargeStyle = new GUIStyle ();
+		labelCenterLargeStyle.fontSize = 48;
+		labelCenterLargeStyle.alignment = TextAnchor.MiddleCenter;
+		labelCenterLargeStyle.padding = new RectOffset ( 0, 0, 3, 3 );
+		labelCenterLargeStyle.margin = new RectOffset ( 4, 4, 4, 4 );
 		
-		labelMiddleSmallStyle = new GUIStyle ();
-		labelMiddleSmallStyle.fontSize = 16;
-		labelMiddleSmallStyle.alignment = TextAnchor.MiddleCenter;
-		labelMiddleSmallStyle.padding = new RectOffset ( 0, 0, 3, 3 );
-		labelMiddleSmallStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		labelCenterMediumStyle = new GUIStyle ();
+		labelCenterMediumStyle.fontSize = 24;
+		labelCenterMediumStyle.alignment = TextAnchor.MiddleCenter;
+		labelCenterMediumStyle.padding = new RectOffset ( 0, 0, 3, 3 );
+		labelCenterMediumStyle.margin = new RectOffset ( 4, 4, 4, 4 );
 		
-		buttonLargeStyle = new GUIStyle ();
-		buttonLargeStyle.fontSize = 48;
-		buttonLargeStyle.alignment = TextAnchor.MiddleCenter;
-		buttonLargeStyle.normal.background = guiskin.button.normal.background;
-		buttonLargeStyle.hover.background = guiskin.button.hover.background;
-		buttonLargeStyle.active.background = guiskin.button.active.background;
-		buttonLargeStyle.border = new RectOffset ( 6, 6, 6, 4 );
-		buttonLargeStyle.padding = new RectOffset ( 6, 6, 3, 3 );
-		buttonLargeStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		labelCenterSmallStyle = new GUIStyle ();
+		labelCenterSmallStyle.fontSize = 16;
+		labelCenterSmallStyle.alignment = TextAnchor.MiddleCenter;
+		labelCenterSmallStyle.padding = new RectOffset ( 0, 0, 3, 3 );
+		labelCenterSmallStyle.margin = new RectOffset ( 4, 4, 4, 4 );
 		
-		buttonMediumStyle = new GUIStyle ();
-		buttonMediumStyle.fontSize = 24;
-		buttonMediumStyle.alignment = TextAnchor.MiddleCenter;
-		buttonMediumStyle.normal.background = guiskin.button.normal.background;
-		buttonMediumStyle.hover.background = guiskin.button.hover.background;
-		buttonMediumStyle.active.background = guiskin.button.active.background;
-		buttonMediumStyle.border = new RectOffset ( 6, 6, 6, 4 );
-		buttonMediumStyle.padding = new RectOffset ( 6, 6, 3, 3 );
-		buttonMediumStyle.margin = new RectOffset ( 4, 4, 4, 4 );
 		
-		buttonSmallStyle = new GUIStyle ();
-		buttonSmallStyle.fontSize = 16;
-		buttonSmallStyle.alignment = TextAnchor.MiddleCenter;
-		buttonSmallStyle.normal.background = guiskin.button.normal.background;
-		buttonSmallStyle.hover.background = guiskin.button.hover.background;
-		buttonSmallStyle.active.background = guiskin.button.active.background;
-		buttonSmallStyle.border = new RectOffset ( 6, 6, 6, 4 );
-		buttonSmallStyle.padding = new RectOffset ( 6, 6, 3, 3 );
-		buttonSmallStyle.margin = new RectOffset ( 4, 4, 4, 4 );	
+		buttonLeftLargeStyle = new GUIStyle ();
+		buttonLeftLargeStyle.fontSize = 48;
+		buttonLeftLargeStyle.alignment = TextAnchor.MiddleLeft;
+		buttonLeftLargeStyle.normal.background = guiskin.button.normal.background;
+		buttonLeftLargeStyle.hover.background = guiskin.button.hover.background;
+		buttonLeftLargeStyle.active.background = guiskin.button.active.background;
+		buttonLeftLargeStyle.border = new RectOffset ( 6, 6, 6, 4 );
+		buttonLeftLargeStyle.padding = new RectOffset ( 6, 6, 3, 3 );
+		buttonLeftLargeStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		
+		buttonLeftMediumStyle = new GUIStyle ();
+		buttonLeftMediumStyle.fontSize = 24;
+		buttonLeftMediumStyle.alignment = TextAnchor.MiddleLeft;
+		buttonLeftMediumStyle.normal.background = guiskin.button.normal.background;
+		buttonLeftMediumStyle.hover.background = guiskin.button.hover.background;
+		buttonLeftMediumStyle.active.background = guiskin.button.active.background;
+		buttonLeftMediumStyle.border = new RectOffset ( 6, 6, 6, 4 );
+		buttonLeftMediumStyle.padding = new RectOffset ( 6, 6, 3, 3 );
+		buttonLeftMediumStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		
+		buttonLeftSmallStyle = new GUIStyle ();
+		buttonLeftSmallStyle.fontSize = 16;
+		buttonLeftSmallStyle.alignment = TextAnchor.MiddleLeft;
+		buttonLeftSmallStyle.normal.background = guiskin.button.normal.background;
+		buttonLeftSmallStyle.hover.background = guiskin.button.hover.background;
+		buttonLeftSmallStyle.active.background = guiskin.button.active.background;
+		buttonLeftSmallStyle.border = new RectOffset ( 6, 6, 6, 4 );
+		buttonLeftSmallStyle.padding = new RectOffset ( 6, 6, 3, 3 );
+		buttonLeftSmallStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		
+		
+		buttonCenterLargeStyle = new GUIStyle ();
+		buttonCenterLargeStyle.fontSize = 48;
+		buttonCenterLargeStyle.alignment = TextAnchor.MiddleCenter;
+		buttonCenterLargeStyle.normal.background = guiskin.button.normal.background;
+		buttonCenterLargeStyle.hover.background = guiskin.button.hover.background;
+		buttonCenterLargeStyle.active.background = guiskin.button.active.background;
+		buttonCenterLargeStyle.border = new RectOffset ( 6, 6, 6, 4 );
+		buttonCenterLargeStyle.padding = new RectOffset ( 6, 6, 3, 3 );
+		buttonCenterLargeStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		
+		buttonCenterMediumStyle = new GUIStyle ();
+		buttonCenterMediumStyle.fontSize = 24;
+		buttonCenterMediumStyle.alignment = TextAnchor.MiddleCenter;
+		buttonCenterMediumStyle.normal.background = guiskin.button.normal.background;
+		buttonCenterMediumStyle.hover.background = guiskin.button.hover.background;
+		buttonCenterMediumStyle.active.background = guiskin.button.active.background;
+		buttonCenterMediumStyle.border = new RectOffset ( 6, 6, 6, 4 );
+		buttonCenterMediumStyle.padding = new RectOffset ( 6, 6, 3, 3 );
+		buttonCenterMediumStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		
+		buttonCenterSmallStyle = new GUIStyle ();
+		buttonCenterSmallStyle.fontSize = 16;
+		buttonCenterSmallStyle.alignment = TextAnchor.MiddleCenter;
+		buttonCenterSmallStyle.normal.background = guiskin.button.normal.background;
+		buttonCenterSmallStyle.hover.background = guiskin.button.hover.background;
+		buttonCenterSmallStyle.active.background = guiskin.button.active.background;
+		buttonCenterSmallStyle.border = new RectOffset ( 6, 6, 6, 4 );
+		buttonCenterSmallStyle.padding = new RectOffset ( 6, 6, 3, 3 );
+		buttonCenterSmallStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		
 		
 		textFieldStyle = new GUIStyle ();
 		textFieldStyle.font = guiskin.font;
@@ -164,30 +213,64 @@ public class UserInterface : MonoBehaviour
 		
 		emptyStyle = new GUIStyle ();
 		
-		hiddenLargeStyle = new GUIStyle ();
-		hiddenLargeStyle.fontSize = 48;
-		hiddenLargeStyle.hover.background = guiskin.button.normal.background;
-		hiddenLargeStyle.active.background = guiskin.button.active.background;
-		hiddenLargeStyle.onNormal.background = guiskin.button.active.background;
-		hiddenLargeStyle.border = new RectOffset ( 6, 6, 6, 4 );
-		hiddenLargeStyle.padding = new RectOffset ( 6, 6, 3, 3 );
-		hiddenLargeStyle.margin = new RectOffset ( 4, 4, 4, 4 );
 		
-		hiddenMediumStyle = new GUIStyle ();
-		hiddenMediumStyle.fontSize = 24;
-		hiddenMediumStyle.hover.background = guiskin.button.normal.background;
-		hiddenMediumStyle.active.background = guiskin.button.active.background;
-		hiddenMediumStyle.border = new RectOffset ( 6, 6, 6, 4 );
-		hiddenMediumStyle.padding = new RectOffset ( 6, 6, 3, 3 );
-		hiddenMediumStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		hiddenCenterLargeStyle = new GUIStyle ();
+		hiddenCenterLargeStyle.fontSize = 48;
+		hiddenCenterLargeStyle.alignment = TextAnchor.MiddleCenter;
+		hiddenCenterLargeStyle.hover.background = guiskin.button.normal.background;
+		hiddenCenterLargeStyle.active.background = guiskin.button.active.background;
+		hiddenCenterLargeStyle.onNormal.background = guiskin.button.active.background;
+		hiddenCenterLargeStyle.border = new RectOffset ( 6, 6, 6, 4 );
+		hiddenCenterLargeStyle.padding = new RectOffset ( 6, 6, 3, 3 );
+		hiddenCenterLargeStyle.margin = new RectOffset ( 4, 4, 4, 4 );
 		
-		hiddenSmallStyle = new GUIStyle ();
-		hiddenSmallStyle.fontSize = 16;
-		hiddenSmallStyle.hover.background = guiskin.button.normal.background;
-		hiddenSmallStyle.active.background = guiskin.button.active.background;
-		hiddenSmallStyle.border = new RectOffset ( 6, 6, 6, 4 );
-		hiddenSmallStyle.padding = new RectOffset ( 6, 6, 3, 3 );
-		hiddenSmallStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		hiddenCenterMediumStyle = new GUIStyle ();
+		hiddenCenterMediumStyle.fontSize = 24;
+		hiddenCenterMediumStyle.alignment = TextAnchor.MiddleCenter;
+		hiddenCenterMediumStyle.hover.background = guiskin.button.normal.background;
+		hiddenCenterMediumStyle.active.background = guiskin.button.active.background;
+		hiddenCenterMediumStyle.border = new RectOffset ( 6, 6, 6, 4 );
+		hiddenCenterMediumStyle.padding = new RectOffset ( 6, 6, 3, 3 );
+		hiddenCenterMediumStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		
+		hiddenCenterSmallStyle = new GUIStyle ();
+		hiddenCenterSmallStyle.fontSize = 16;
+		hiddenCenterSmallStyle.alignment = TextAnchor.MiddleCenter;
+		hiddenCenterSmallStyle.hover.background = guiskin.button.normal.background;
+		hiddenCenterSmallStyle.active.background = guiskin.button.active.background;
+		hiddenCenterSmallStyle.border = new RectOffset ( 6, 6, 6, 4 );
+		hiddenCenterSmallStyle.padding = new RectOffset ( 6, 6, 3, 3 );
+		hiddenCenterSmallStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		
+		
+		hiddenLeftLargeStyle = new GUIStyle ();
+		hiddenLeftLargeStyle.fontSize = 48;
+		hiddenLeftLargeStyle.alignment = TextAnchor.MiddleLeft;
+		hiddenLeftLargeStyle.hover.background = guiskin.button.normal.background;
+		hiddenLeftLargeStyle.active.background = guiskin.button.active.background;
+		hiddenLeftLargeStyle.onNormal.background = guiskin.button.active.background;
+		hiddenLeftLargeStyle.border = new RectOffset ( 6, 6, 6, 4 );
+		hiddenLeftLargeStyle.padding = new RectOffset ( 6, 6, 3, 3 );
+		hiddenLeftLargeStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		
+		hiddenLeftMediumStyle = new GUIStyle ();
+		hiddenLeftMediumStyle.fontSize = 24;
+		hiddenLeftMediumStyle.alignment = TextAnchor.MiddleLeft;
+		hiddenLeftMediumStyle.hover.background = guiskin.button.normal.background;
+		hiddenLeftMediumStyle.active.background = guiskin.button.active.background;
+		hiddenLeftMediumStyle.border = new RectOffset ( 6, 6, 6, 4 );
+		hiddenLeftMediumStyle.padding = new RectOffset ( 6, 6, 3, 3 );
+		hiddenLeftMediumStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		
+		hiddenLeftSmallStyle = new GUIStyle ();
+		hiddenLeftSmallStyle.fontSize = 16;
+		hiddenLeftSmallStyle.alignment = TextAnchor.MiddleLeft;
+		hiddenLeftSmallStyle.hover.background = guiskin.button.normal.background;
+		hiddenLeftSmallStyle.active.background = guiskin.button.active.background;
+		hiddenLeftSmallStyle.border = new RectOffset ( 6, 6, 6, 4 );
+		hiddenLeftSmallStyle.padding = new RectOffset ( 6, 6, 3, 3 );
+		hiddenLeftSmallStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		
 		
 		guicolor = new Color ( 1, 1, 1, 0 );
 	}
@@ -286,7 +369,7 @@ public class UserInterface : MonoBehaviour
 					GUILayout.BeginHorizontal ();
 					GUILayout.FlexibleSpace ();
 				
-					if ( GUILayout.Button ( "Play", buttonLargeStyle, GUILayout.Width ( 350 )))
+					if ( GUILayout.Button ( "Play", buttonCenterLargeStyle, GUILayout.Width ( 350 )))
 					{
 						
 						if ( play == false )
@@ -304,7 +387,7 @@ public class UserInterface : MonoBehaviour
 						}
 					}
 					
-					if ( GUILayout.Button ( "Options", buttonLargeStyle, GUILayout.Width ( 350 )))
+					if ( GUILayout.Button ( "Options", buttonCenterLargeStyle, GUILayout.Width ( 350 )))
 					{
 						
 						if ( options == false )
@@ -376,7 +459,7 @@ public class UserInterface : MonoBehaviour
 		GUILayout.BeginHorizontal ();
 		
 		GUILayout.FlexibleSpace ();
-		GUILayout.Label ( "TradingCard Game", labelMiddleLargeStyle );
+		GUILayout.Label ( "TradingCard Game", labelCenterLargeStyle );
 		GUILayout.FlexibleSpace ();
 		
 		GUILayout.EndHorizontal ();
@@ -393,7 +476,7 @@ public class UserInterface : MonoBehaviour
 		if ( externalInformation.startup == false )
 		{
 			
-			if ( GUILayout.Button ( "Click to Continue", buttonLargeStyle ))
+			if ( GUILayout.Button ( "Click to Continue", buttonCenterLargeStyle ))
 			{
 				
 				Screen.SetResolution ( 1617, 910, false );
@@ -423,7 +506,7 @@ public class UserInterface : MonoBehaviour
 		GUILayout.Space ( 5 );
 		GUILayout.BeginHorizontal ();
 		GUILayout.Space ( 5 );
-		if ( GUILayout.Button ( "Host Match", hiddenLargeStyle ))
+		if ( GUILayout.Button ( "Host Match", hiddenCenterLargeStyle ))
 		{
 			
 			if ( hostSection == true )
@@ -439,7 +522,7 @@ public class UserInterface : MonoBehaviour
 			GUILayout.BeginHorizontal ();
 			GUILayout.Label ( "Host Match on: ", labelLeftMediumStyle );
 			hostPort = GUILayout.TextField ( hostPort, 5, textFieldStyle );
-			if ( GUILayout.Button ( "Host", buttonSmallStyle ))
+			if ( GUILayout.Button ( "Host", buttonCenterSmallStyle ))
 			{
 				
 				UnityEngine.Debug.Log ( "\nInitializing Host" );
@@ -459,7 +542,7 @@ public class UserInterface : MonoBehaviour
 		GUILayout.Space ( 40 );
 		GUILayout.BeginHorizontal ();
 		GUILayout.Space ( 5 );
-		if ( GUILayout.Button ( "Direct Connection", hiddenLargeStyle ))
+		if ( GUILayout.Button ( "Direct Connection", hiddenCenterLargeStyle ))
 		{
 			
 			if ( directConnectSection == true )
@@ -477,13 +560,13 @@ public class UserInterface : MonoBehaviour
 			directIP = GUILayout.TextField ( directIP, 22, textFieldStyle, GUILayout.MinWidth ( 120 ));
 			directPort = GUILayout.TextField ( directPort, 5, textFieldStyle, GUILayout.MinWidth ( 50 ));
 			directName = GUILayout.TextField ( directName, 22, textFieldStyle, GUILayout.MinWidth ( 100 ));
-			if ( GUILayout.Button ( "Save Server", buttonSmallStyle ))
+			if ( GUILayout.Button ( "Save Server", buttonCenterSmallStyle ))
 			{
 				
 				UnityEngine.Debug.Log ( "\nSaving Server [" + directIP + ", " + directPort + ", " + directName + "]" );
 				externalInformation.SaveServer ( directIP, directPort, directName );
 			}
-			if ( GUILayout.Button ( "Connect", buttonSmallStyle ))
+			if ( GUILayout.Button ( "Connect", buttonCenterSmallStyle ))
 			{
 				
 /*				Connect to IP	*/
@@ -496,7 +579,7 @@ public class UserInterface : MonoBehaviour
 		GUILayout.Space ( 40 );
 		GUILayout.BeginHorizontal ();
 		GUILayout.Space ( 5 );
-		if ( GUILayout.Button ( "Official Servers", hiddenLargeStyle ))
+		if ( GUILayout.Button ( "Official Servers", hiddenCenterLargeStyle ))
 		{
 			
 			if ( officialConnectSection == true )
@@ -512,7 +595,7 @@ public class UserInterface : MonoBehaviour
 			foreach ( OfficialServer officialServer in serversManager.officialServerList.officialServers )
 			{
 				
-				if ( GUILayout.Button ( officialServer.name, buttonMediumStyle ))
+				if ( GUILayout.Button ( officialServer.name, buttonLeftMediumStyle ))
 				{
 					
 /*					Connect to Official Server	*/					
@@ -527,7 +610,7 @@ public class UserInterface : MonoBehaviour
 			GUILayout.Space ( 40 );
 			GUILayout.BeginHorizontal ();
 			GUILayout.Space ( 5 );
-			if ( GUILayout.Button ( "Saved Servers", hiddenLargeStyle ))
+			if ( GUILayout.Button ( "Saved Servers", hiddenCenterLargeStyle ))
 			{
 					
 				if ( savedServerSection == true )
@@ -544,13 +627,13 @@ public class UserInterface : MonoBehaviour
 				{
 					
 					GUILayout.BeginHorizontal ();
-					if ( GUILayout.Button ( savedServer.name, buttonMediumStyle ))
+					if ( GUILayout.Button ( savedServer.name, buttonLeftMediumStyle ))
 					{
 						
 /*						Connect to Saved Server	*/						
 					}
 					
-					if ( GUILayout.Button ( "Delete", buttonMediumStyle, GUILayout.Width ( 100 )))
+					if ( GUILayout.Button ( "Delete", buttonCenterMediumStyle, GUILayout.Width ( 100 )))
 					{
 						
 						UnityEngine.Debug.Log ( "\nDeleting Server " + savedServer.name + " (" + savedServer.index + ")" );
@@ -572,17 +655,17 @@ public class UserInterface : MonoBehaviour
 		GUILayout.BeginVertical ();
 		GUILayout.Space ( 5 );
 		
-		GUILayout.Label ( "Options", labelLeftLargeStyle );
+		GUILayout.Label ( "General Options", labelLeftLargeStyle );
 		
 
 		GUILayout.BeginHorizontal ();
-		if ( GUILayout.Button ( "Save", buttonMediumStyle ))
+		if ( GUILayout.Button ( "Save", buttonCenterMediumStyle ))
 		{
 			
 			externalInformation.WritePreferences ();
 		}
 		
-		if ( GUILayout.Button ( "Revert", buttonMediumStyle ))
+		if ( GUILayout.Button ( "Revert", buttonCenterMediumStyle ))
 		{
 			
 			externalInformation.ReadPreferences ();
@@ -619,7 +702,7 @@ public class UserInterface : MonoBehaviour
 			if ( networkManager.hosting == true && networkManager.connectionType == NetworkManager.ConnectionType.Hosting )
 			{
 			
-				GUILayout.Label ( "Waiting for Opponent", labelMiddleMediumStyle );
+				GUILayout.Label ( "Waiting for Opponent", labelCenterMediumStyle );
 				
 				GUILayout.BeginHorizontal ();
 				GUILayout.FlexibleSpace ();
@@ -631,7 +714,7 @@ public class UserInterface : MonoBehaviour
 			if ( networkManager.hosting == true && networkManager.connectionType == NetworkManager.ConnectionType.Connected )
 			{
 				
-				GUILayout.Label ( preferencesManager.preferences.playerName + " VS " + networkManager.opponentName, labelMiddleLargeStyle );
+				GUILayout.Label ( preferencesManager.preferences.playerName + " VS " + networkManager.opponentName, labelCenterLargeStyle );
 				
 				GUILayout.BeginHorizontal ();
 				GUILayout.FlexibleSpace ();
@@ -645,20 +728,20 @@ public class UserInterface : MonoBehaviour
 				{
 				
 					GUILayout.Space ( 20 );
-					if ( GUILayout.Button ( "Begin Match", buttonLargeStyle ))
+					if ( GUILayout.Button ( "Begin Match", buttonCenterLargeStyle ))
 					{
 						
 						networkManager.connectionType = NetworkManager.ConnectionType.Playing;
 					}
 					
 					GUILayout.Space ( 5 );
-					if ( GUILayout.Button ( "Match Options", buttonMediumStyle ))
+					if ( GUILayout.Button ( "Match Options", buttonCenterMediumStyle ))
 					{
 						
 						networkManager.options = true;
 					}
 					
-					if ( GUILayout.Button ( "Boot Opponent", buttonMediumStyle ))
+					if ( GUILayout.Button ( "Boot Opponent", buttonCenterMediumStyle ))
 					{
 						
 						UnityEngine.Debug.Log ( "\nBooting Opponent" );
@@ -675,7 +758,7 @@ public class UserInterface : MonoBehaviour
 				} else {
 				
 					GUILayout.FlexibleSpace ();
-					if ( GUILayout.Button ( "Back", buttonMediumStyle ))
+					if ( GUILayout.Button ( "Back", buttonCenterMediumStyle ))
 					{
 						
 						networkManager.options = false;
@@ -684,14 +767,14 @@ public class UserInterface : MonoBehaviour
 			}
 		} else {
 		
-			GUILayout.Label ( networkManager.infoString, labelMiddleMediumStyle );
+			GUILayout.Label ( networkManager.infoString, labelCenterMediumStyle );
 		}
 		
 		if ( networkManager.options == false )
 		{
 			
 			GUILayout.FlexibleSpace ();
-			if ( GUILayout.Button ( "Disable Hosting", buttonMediumStyle ))
+			if ( GUILayout.Button ( "Disable Hosting", buttonCenterMediumStyle ))
 			{
 				
 				UnityEngine.Debug.Log ( "\nShutting Down Server" );
@@ -720,12 +803,11 @@ public class UserInterface : MonoBehaviour
 	{
 		
 		GUILayout.BeginVertical ();
+		
 		GUILayout.BeginHorizontal ();
-		
 		GUILayout.FlexibleSpace ();
-		GUILayout.Label ( "Game goes here.", labelMiddleLargeStyle );
+		GUILayout.Label ( preferencesManager.preferences.playerName + " VS " + networkManager.opponentName, labelCenterLargeStyle );
 		GUILayout.FlexibleSpace ();
-		
 		GUILayout.EndHorizontal ();
 
 		GUILayout.FlexibleSpace ();
