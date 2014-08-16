@@ -720,7 +720,7 @@ public class UserInterface : MonoBehaviour
 				GUILayout.FlexibleSpace ();
 				GUILayout.Label ( "Match length: Indefinite", labelLeftMediumStyle );
 				GUILayout.FlexibleSpace ();
-				GUILayout.Label ( "Cards in MasterDeck: " + deckManager.masterDeck.cards.Length, labelLeftMediumStyle );
+				GUILayout.Label ( "Cards in MasterDeck: " + deckManager.masterDeck.gameCards.Length, labelLeftMediumStyle );
 				GUILayout.FlexibleSpace ();
 				GUILayout.EndHorizontal ();
 				
@@ -808,6 +808,14 @@ public class UserInterface : MonoBehaviour
 		GUILayout.FlexibleSpace ();
 		GUILayout.Label ( preferencesManager.preferences.playerName + " VS " + networkManager.opponentName, labelCenterLargeStyle );
 		GUILayout.FlexibleSpace ();
+		GUILayout.EndHorizontal ();
+		
+		GUILayout.FlexibleSpace ();
+		
+		GUILayout.BeginHorizontal ();
+		
+		GUILayout.Button ( deckManager.masterDeck.supportCards[0].image );
+		
 		GUILayout.EndHorizontal ();
 
 		GUILayout.FlexibleSpace ();

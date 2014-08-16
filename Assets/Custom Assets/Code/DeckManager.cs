@@ -10,13 +10,29 @@ public class MasterDeck
 	
 	[XmlAttribute ( "version" )]
 	public String deckVersion;
+	
+	[XmlElement ( "SupportCard" )]
+	public SupportCard[] supportCards;
 
-	[XmlElement ( "Card" )]
-	public Card[] cards;
+	[XmlElement ( "GameCard" )]
+	public GameCard[] gameCards;
 }
 
 
-public class Card
+public class SupportCard
+{
+	
+	[XmlAttribute ( "version" )]
+	public String cardVersion;
+	
+	public String name;
+	
+	[XmlIgnore]
+	public Texture2D image;
+}
+
+
+public class GameCard
 {
 
 	[XmlAttribute ( "identifier" )]
@@ -28,6 +44,9 @@ public class Card
 	
 	[XmlElement("Action")]
 	public Action action;
+	
+	[XmlIgnore]
+	public Texture2D image;
 }
 
 

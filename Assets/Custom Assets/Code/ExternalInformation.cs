@@ -22,13 +22,16 @@ public class ExternalInformation : MonoBehaviour
 	string macPath = Path.DirectorySeparatorChar + "Users" + Path.DirectorySeparatorChar  + Environment.UserName + Path.DirectorySeparatorChar + "Library" + Path.DirectorySeparatorChar  + "Application Support" + Path.DirectorySeparatorChar + "2Cat Studios" + Path.DirectorySeparatorChar + "TradingCardGame" + Path.DirectorySeparatorChar;
 	string windowsPath = Environment.GetFolderPath ( Environment.SpecialFolder.CommonApplicationData ) + Path.DirectorySeparatorChar + "2Cat Studios" + Path.DirectorySeparatorChar + "TradingCardGame" + Path.DirectorySeparatorChar;
 	string path;
-	string cardsPath;
+	string gameCardsPath;
+	string supportCardsPath;
 	
 	bool localDirectories = false;
 	bool savedServers = false;
 	bool officialServers = false;
 	bool masterDeck = false;
 	bool cards = false;
+	
+	bool loadCardImages = false;
 	
 	void Start ()
 	{
@@ -53,7 +56,8 @@ public class ExternalInformation : MonoBehaviour
 			UnityEngine.Debug.Log ( "Client running on Windows OS" );
 		}
 		
-		cardsPath = path + "Cards" + Path.DirectorySeparatorChar;
+		gameCardsPath = path + "Cards" + Path.DirectorySeparatorChar + "GameCards" + Path.DirectorySeparatorChar;
+		supportCardsPath = path + "Cards" + Path.DirectorySeparatorChar + "SupportCards" + Path.DirectorySeparatorChar;
 		
 		UnityEngine.Debug.Log ( "Application Size: " + Screen.width + " x " + Screen.height );
 		UnityEngine.Debug.Log ( "Screen Size: " + Screen.currentResolution.width + " x " + Screen.currentResolution.height );
@@ -62,7 +66,7 @@ public class ExternalInformation : MonoBehaviour
 		
 		Thread setupLocalDirectoriesThread = new Thread ( new ThreadStart ( SetupLocalDirectories ));
 		setupLocalDirectoriesThread.Start ();
-		
+
 		StartCoroutine ( AwaitStartup ());
 	}
 	
@@ -73,13 +77,38 @@ public class ExternalInformation : MonoBehaviour
 		while ( true )
 		{
 			
-			if ( localDirectories == true & savedServers == true & officialServers == true & masterDeck == true && cards == true )
+			if ( localDirectories == true & savedServers == true & officialServers == true & masterDeck == true )
 			{
-			
-				UnityEngine.Debug.Log ( "\nStartup Completed" );
+				
+				if ( cards == true )
+				{
+					
+					UnityEngine.Debug.Log ( "\nStartup Completed" );
 	
-				startup = false;
-				yield break;
+					startup = false;
+					yield break;
+				} else {
+					
+					if ( loadCardImages == true )
+					{
+						
+						UnityEngine.Debug.Log ( "\nCreating Deck" );
+
+						foreach ( SupportCard card in deckManager.masterDeck.supportCards )
+						{
+				
+							card.image = new Texture2D ( 192, 256, TextureFormat.DXT5, false );
+		
+							WWW supportImageWWW = new WWW ( "file://" + supportCardsPath + card.name + "-" + card.cardVersion + ".png" );
+							yield return supportImageWWW;
+				
+							supportImageWWW.LoadImageIntoTexture( card.image );
+						}
+						
+						UnityEngine.Debug.Log ( "\tDeck Created" );
+						cards = true;
+					}
+				}
 			}
 			
 			yield return null;
@@ -100,10 +129,16 @@ public class ExternalInformation : MonoBehaviour
 			Directory.CreateDirectory ( path );
 		}
 		
-		if ( !Directory.Exists ( cardsPath ))
+		if ( !Directory.Exists ( gameCardsPath ))
 		{
 			
-			Directory.CreateDirectory ( cardsPath );
+			Directory.CreateDirectory ( gameCardsPath );
+		}
+		
+		if ( !Directory.Exists ( supportCardsPath ))
+		{
+			
+			Directory.CreateDirectory ( supportCardsPath );
 		}
 		
 		if ( !File.Exists ( path + "PersonalDeck.xml" ))
@@ -352,27 +387,27 @@ public class ExternalInformation : MonoBehaviour
 		
 		Thread.Sleep ( 1000 );
 		
-		debugLog.ReceiveMessage ( "\tVerifying " + deckManager.masterDeck.cards.Length + " Cards" );
+		debugLog.ReceiveMessage ( "\tVerifying Support Cards [" + deckManager.masterDeck.supportCards.Length + "]" );
 		
-		int index = 0;
-		while ( index < deckManager.masterDeck.cards.Length )
+		int supportCardIndex = 0;
+		while ( supportCardIndex < deckManager.masterDeck.supportCards.Length )
 		{
 			
-			debugLog.ReceiveMessage ( "\t\tVerifying " + index + " of " + ( deckManager.masterDeck.cards.Length - 1 ));
-			if ( !File.Exists ( cardsPath + deckManager.masterDeck.cards[index].cardIdentifier + ".png" ))
+			debugLog.ReceiveMessage ( "\t\tVerifying " + supportCardIndex + " of " + ( deckManager.masterDeck.supportCards.Length - 1 ));
+			if ( !File.Exists ( supportCardsPath + deckManager.masterDeck.supportCards[supportCardIndex].name + "-" + deckManager.masterDeck.supportCards[supportCardIndex].cardVersion + ".png" ))
 			{
 				
 				debugLog.ReceiveMessage ( "\t\t\tCard Does not Exist - Attempting Download" );
 				
 				try
 				{
-				
+					
 					using ( WebClient webClient = new WebClient ())
 					{
-
-						webClient.DownloadFile (( "http://2catstudios.github.io/TradingCardGame/Cards/GameCards/" + deckManager.masterDeck.cards[index].cardIdentifier + ".png" ), ( cardsPath + deckManager.masterDeck.cards[index].cardIdentifier + ".png" ));
 						
-						debugLog.ReceiveMessage ( "\t\t\t" + deckManager.masterDeck.cards[index].cardIdentifier + " Download Successfully" );
+						webClient.DownloadFile (( "http://2catstudios.github.io/TradingCardGame/Cards/SupportCards/" + deckManager.masterDeck.supportCards[supportCardIndex].name + "-" + deckManager.masterDeck.supportCards[supportCardIndex].cardVersion + ".png" ), ( supportCardsPath + deckManager.masterDeck.supportCards[supportCardIndex].name + "-" + deckManager.masterDeck.supportCards[supportCardIndex].cardVersion + ".png" ));
+						
+						debugLog.ReceiveMessage ( "\t\t\t'" + deckManager.masterDeck.supportCards[supportCardIndex].name + "' Downloaded Successfully" );
 					}
 				} catch ( Exception e )
 				{
@@ -384,34 +419,95 @@ public class ExternalInformation : MonoBehaviour
 				debugLog.ReceiveMessage ( "\t\t\tCard Exists" );
 			}
 			
-			index += 1;
+			supportCardIndex += 1;
 		}
 		
-		debugLog.ReceiveMessage ( "\tAll Cards Found/Downloaded" );
+		debugLog.ReceiveMessage ( "\tAll Support Cards Found/Downloaded" );
 		
-		if ( Directory.GetFiles ( cardsPath, "*.png" ).Length > deckManager.masterDeck.cards.Length )
+		if ( Directory.GetFiles ( supportCardsPath, "*.png" ).Length > deckManager.masterDeck.supportCards.Length )
 		{
 			
 			debugLog.ReceiveMessage ( "\tDeleting Old Cards" );
-			
-			int cardIndex = 0;
-			foreach ( string cardImage in Directory.GetFiles ( cardsPath, "*.png" ))
+
+			int supportCardDeleteIndex = 0;
+			foreach ( string cardImage in Directory.GetFiles ( supportCardsPath, "*.png" ))
 			{
 				
-				if (  cardImage.Substring ( cardImage.LastIndexOf ( "/" ) + 1, ( cardImage.Length - cardImage.LastIndexOf ( "/" ) - 5 )) != deckManager.masterDeck.cards [cardIndex].cardIdentifier )
+				if (  cardImage.Substring ( cardImage.LastIndexOf ( "/" ) + 1, ( cardImage.Length - cardImage.LastIndexOf ( "/" ) - 5 )) != ( deckManager.masterDeck.supportCards[supportCardDeleteIndex].name + "-" + deckManager.masterDeck.supportCards[supportCardDeleteIndex].cardVersion ))
 				{
-
+					
 					File.Delete ( cardImage );
 				} else {
 					
-					cardIndex += 1;
+					supportCardDeleteIndex += 1;
 				}
 			}
 			
 			debugLog.ReceiveMessage ( "\t\tOld Cards Deleted" );
 		}
 		
-		cards = true;
+		
+		
+		debugLog.ReceiveMessage ( "\n\tVerifying Game Cards [" + deckManager.masterDeck.gameCards.Length + "]" );
+		
+		int gameCardIndex = 0;
+		while ( gameCardIndex < deckManager.masterDeck.gameCards.Length )
+		{
+			
+			debugLog.ReceiveMessage ( "\t\tVerifying " + gameCardIndex + " of " + ( deckManager.masterDeck.gameCards.Length - 1 ));
+			if ( !File.Exists ( gameCardsPath + deckManager.masterDeck.gameCards[gameCardIndex].cardIdentifier + ".png" ))
+			{
+				
+				debugLog.ReceiveMessage ( "\t\t\tCard Does not Exist - Attempting Download" );
+				
+				try
+				{
+				
+					using ( WebClient webClient = new WebClient ())
+					{
+
+						webClient.DownloadFile (( "http://2catstudios.github.io/TradingCardGame/Cards/GameCards/" + deckManager.masterDeck.gameCards[gameCardIndex].cardIdentifier + ".png" ), ( gameCardsPath + deckManager.masterDeck.gameCards[gameCardIndex].cardIdentifier + ".png" ));
+						
+						debugLog.ReceiveMessage ( "\t\t\t'" + deckManager.masterDeck.gameCards[gameCardIndex].cardIdentifier + "' Download Successfully" );
+					}
+				} catch ( Exception e )
+				{
+					
+					debugLog.ReceiveMessage ( "\t\tERROR: " + e );
+				}
+			} else {
+				
+				debugLog.ReceiveMessage ( "\t\t\tCard Exists" );
+			}
+			
+			gameCardIndex += 1;
+		}
+		
+		debugLog.ReceiveMessage ( "\tAll Game Cards Found/Downloaded" );
+		
+		if ( Directory.GetFiles ( gameCardsPath, "*.png" ).Length > deckManager.masterDeck.gameCards.Length )
+		{
+			
+			debugLog.ReceiveMessage ( "\tDeleting Old Cards" );
+			
+			int gameCardDeleteIndex = 0;
+			foreach ( string cardImage in Directory.GetFiles ( gameCardsPath, "*.png" ))
+			{
+				
+				if (  cardImage.Substring ( cardImage.LastIndexOf ( "/" ) + 1, ( cardImage.Length - cardImage.LastIndexOf ( "/" ) - 5 )) != deckManager.masterDeck.gameCards [gameCardDeleteIndex].cardIdentifier )
+				{
+
+					File.Delete ( cardImage );
+				} else {
+					
+					gameCardDeleteIndex += 1;
+				}
+			}
+			
+			debugLog.ReceiveMessage ( "\t\tOld Cards Deleted" );
+		}
+		
+		loadCardImages = true;
 	}
 	
 	
