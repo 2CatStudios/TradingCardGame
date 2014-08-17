@@ -12,7 +12,8 @@ public class UserInterface : MonoBehaviour
 	NetworkManager networkManager;
 	LoadingImage loadingImage;
 	
-	public GUISkin guiskin;
+	public GUISkin greySkin;
+	public GUISkin blueSkin;
 	internal Rect homePaneRect;
 	Rect controlWindowRect;
 	Rect gameWindowRect;
@@ -49,6 +50,9 @@ public class UserInterface : MonoBehaviour
 	GUIStyle hiddenLeftLargeStyle;
 	GUIStyle hiddenLeftMediumStyle;
 	GUIStyle hiddenLeftSmallStyle;
+	
+	
+	GUIStyle cardStyle;
 	
 	Color guicolor;
 	
@@ -138,9 +142,9 @@ public class UserInterface : MonoBehaviour
 		buttonLeftLargeStyle = new GUIStyle ();
 		buttonLeftLargeStyle.fontSize = 48;
 		buttonLeftLargeStyle.alignment = TextAnchor.MiddleLeft;
-		buttonLeftLargeStyle.normal.background = guiskin.button.normal.background;
-		buttonLeftLargeStyle.hover.background = guiskin.button.hover.background;
-		buttonLeftLargeStyle.active.background = guiskin.button.active.background;
+		buttonLeftLargeStyle.normal.background = greySkin.button.normal.background;
+		buttonLeftLargeStyle.hover.background = greySkin.button.hover.background;
+		buttonLeftLargeStyle.active.background = greySkin.button.active.background;
 		buttonLeftLargeStyle.border = new RectOffset ( 6, 6, 6, 4 );
 		buttonLeftLargeStyle.padding = new RectOffset ( 6, 6, 3, 3 );
 		buttonLeftLargeStyle.margin = new RectOffset ( 4, 4, 4, 4 );
@@ -148,9 +152,9 @@ public class UserInterface : MonoBehaviour
 		buttonLeftMediumStyle = new GUIStyle ();
 		buttonLeftMediumStyle.fontSize = 24;
 		buttonLeftMediumStyle.alignment = TextAnchor.MiddleLeft;
-		buttonLeftMediumStyle.normal.background = guiskin.button.normal.background;
-		buttonLeftMediumStyle.hover.background = guiskin.button.hover.background;
-		buttonLeftMediumStyle.active.background = guiskin.button.active.background;
+		buttonLeftMediumStyle.normal.background = greySkin.button.normal.background;
+		buttonLeftMediumStyle.hover.background = greySkin.button.hover.background;
+		buttonLeftMediumStyle.active.background = greySkin.button.active.background;
 		buttonLeftMediumStyle.border = new RectOffset ( 6, 6, 6, 4 );
 		buttonLeftMediumStyle.padding = new RectOffset ( 6, 6, 3, 3 );
 		buttonLeftMediumStyle.margin = new RectOffset ( 4, 4, 4, 4 );
@@ -158,9 +162,9 @@ public class UserInterface : MonoBehaviour
 		buttonLeftSmallStyle = new GUIStyle ();
 		buttonLeftSmallStyle.fontSize = 16;
 		buttonLeftSmallStyle.alignment = TextAnchor.MiddleLeft;
-		buttonLeftSmallStyle.normal.background = guiskin.button.normal.background;
-		buttonLeftSmallStyle.hover.background = guiskin.button.hover.background;
-		buttonLeftSmallStyle.active.background = guiskin.button.active.background;
+		buttonLeftSmallStyle.normal.background = greySkin.button.normal.background;
+		buttonLeftSmallStyle.hover.background = greySkin.button.hover.background;
+		buttonLeftSmallStyle.active.background = greySkin.button.active.background;
 		buttonLeftSmallStyle.border = new RectOffset ( 6, 6, 6, 4 );
 		buttonLeftSmallStyle.padding = new RectOffset ( 6, 6, 3, 3 );
 		buttonLeftSmallStyle.margin = new RectOffset ( 4, 4, 4, 4 );
@@ -169,9 +173,9 @@ public class UserInterface : MonoBehaviour
 		buttonCenterLargeStyle = new GUIStyle ();
 		buttonCenterLargeStyle.fontSize = 48;
 		buttonCenterLargeStyle.alignment = TextAnchor.MiddleCenter;
-		buttonCenterLargeStyle.normal.background = guiskin.button.normal.background;
-		buttonCenterLargeStyle.hover.background = guiskin.button.hover.background;
-		buttonCenterLargeStyle.active.background = guiskin.button.active.background;
+		buttonCenterLargeStyle.normal.background = greySkin.button.normal.background;
+		buttonCenterLargeStyle.hover.background = greySkin.button.hover.background;
+		buttonCenterLargeStyle.active.background = greySkin.button.active.background;
 		buttonCenterLargeStyle.border = new RectOffset ( 6, 6, 6, 4 );
 		buttonCenterLargeStyle.padding = new RectOffset ( 6, 6, 3, 3 );
 		buttonCenterLargeStyle.margin = new RectOffset ( 4, 4, 4, 4 );
@@ -179,9 +183,9 @@ public class UserInterface : MonoBehaviour
 		buttonCenterMediumStyle = new GUIStyle ();
 		buttonCenterMediumStyle.fontSize = 24;
 		buttonCenterMediumStyle.alignment = TextAnchor.MiddleCenter;
-		buttonCenterMediumStyle.normal.background = guiskin.button.normal.background;
-		buttonCenterMediumStyle.hover.background = guiskin.button.hover.background;
-		buttonCenterMediumStyle.active.background = guiskin.button.active.background;
+		buttonCenterMediumStyle.normal.background = greySkin.button.normal.background;
+		buttonCenterMediumStyle.hover.background = greySkin.button.hover.background;
+		buttonCenterMediumStyle.active.background = greySkin.button.active.background;
 		buttonCenterMediumStyle.border = new RectOffset ( 6, 6, 6, 4 );
 		buttonCenterMediumStyle.padding = new RectOffset ( 6, 6, 3, 3 );
 		buttonCenterMediumStyle.margin = new RectOffset ( 4, 4, 4, 4 );
@@ -189,27 +193,27 @@ public class UserInterface : MonoBehaviour
 		buttonCenterSmallStyle = new GUIStyle ();
 		buttonCenterSmallStyle.fontSize = 16;
 		buttonCenterSmallStyle.alignment = TextAnchor.MiddleCenter;
-		buttonCenterSmallStyle.normal.background = guiskin.button.normal.background;
-		buttonCenterSmallStyle.hover.background = guiskin.button.hover.background;
-		buttonCenterSmallStyle.active.background = guiskin.button.active.background;
+		buttonCenterSmallStyle.normal.background = greySkin.button.normal.background;
+		buttonCenterSmallStyle.hover.background = greySkin.button.hover.background;
+		buttonCenterSmallStyle.active.background = greySkin.button.active.background;
 		buttonCenterSmallStyle.border = new RectOffset ( 6, 6, 6, 4 );
 		buttonCenterSmallStyle.padding = new RectOffset ( 6, 6, 3, 3 );
 		buttonCenterSmallStyle.margin = new RectOffset ( 4, 4, 4, 4 );
 		
 		
 		textFieldStyle = new GUIStyle ();
-		textFieldStyle.font = guiskin.font;
+		textFieldStyle.font = greySkin.font;
 		textFieldStyle.font.material.color = Color.black;
 		textFieldStyle.border = new RectOffset ( 4, 4, 4, 4 );
 		textFieldStyle.padding = new RectOffset ( 3, 3, 3, 3 );
 		textFieldStyle.margin = new RectOffset ( 4, 4, 4, 4 );
-		textFieldStyle.normal.background = guiskin.textField.normal.background;
-		textFieldStyle.hover.background = guiskin.textField.hover.background;
+		textFieldStyle.normal.background = greySkin.textField.normal.background;
+		textFieldStyle.hover.background = greySkin.textField.hover.background;
 		
 		windowStyle = new GUIStyle ();
 		windowStyle.border = new RectOffset ( 6, 6, 6, 4 );
-		windowStyle.normal.background = guiskin.button.normal.background;
-		windowStyle.onNormal.background = guiskin.button.normal.background;
+		windowStyle.normal.background = blueSkin.window.normal.background;
+		windowStyle.onNormal.background = blueSkin.window.normal.background;
 		
 		emptyStyle = new GUIStyle ();
 		
@@ -217,9 +221,9 @@ public class UserInterface : MonoBehaviour
 		hiddenCenterLargeStyle = new GUIStyle ();
 		hiddenCenterLargeStyle.fontSize = 48;
 		hiddenCenterLargeStyle.alignment = TextAnchor.MiddleCenter;
-		hiddenCenterLargeStyle.hover.background = guiskin.button.normal.background;
-		hiddenCenterLargeStyle.active.background = guiskin.button.active.background;
-		hiddenCenterLargeStyle.onNormal.background = guiskin.button.active.background;
+		hiddenCenterLargeStyle.hover.background = greySkin.button.normal.background;
+		hiddenCenterLargeStyle.active.background = greySkin.button.active.background;
+		hiddenCenterLargeStyle.onNormal.background = greySkin.button.active.background;
 		hiddenCenterLargeStyle.border = new RectOffset ( 6, 6, 6, 4 );
 		hiddenCenterLargeStyle.padding = new RectOffset ( 6, 6, 3, 3 );
 		hiddenCenterLargeStyle.margin = new RectOffset ( 4, 4, 4, 4 );
@@ -227,8 +231,8 @@ public class UserInterface : MonoBehaviour
 		hiddenCenterMediumStyle = new GUIStyle ();
 		hiddenCenterMediumStyle.fontSize = 24;
 		hiddenCenterMediumStyle.alignment = TextAnchor.MiddleCenter;
-		hiddenCenterMediumStyle.hover.background = guiskin.button.normal.background;
-		hiddenCenterMediumStyle.active.background = guiskin.button.active.background;
+		hiddenCenterMediumStyle.hover.background = greySkin.button.normal.background;
+		hiddenCenterMediumStyle.active.background = greySkin.button.active.background;
 		hiddenCenterMediumStyle.border = new RectOffset ( 6, 6, 6, 4 );
 		hiddenCenterMediumStyle.padding = new RectOffset ( 6, 6, 3, 3 );
 		hiddenCenterMediumStyle.margin = new RectOffset ( 4, 4, 4, 4 );
@@ -236,8 +240,8 @@ public class UserInterface : MonoBehaviour
 		hiddenCenterSmallStyle = new GUIStyle ();
 		hiddenCenterSmallStyle.fontSize = 16;
 		hiddenCenterSmallStyle.alignment = TextAnchor.MiddleCenter;
-		hiddenCenterSmallStyle.hover.background = guiskin.button.normal.background;
-		hiddenCenterSmallStyle.active.background = guiskin.button.active.background;
+		hiddenCenterSmallStyle.hover.background = greySkin.button.normal.background;
+		hiddenCenterSmallStyle.active.background = greySkin.button.active.background;
 		hiddenCenterSmallStyle.border = new RectOffset ( 6, 6, 6, 4 );
 		hiddenCenterSmallStyle.padding = new RectOffset ( 6, 6, 3, 3 );
 		hiddenCenterSmallStyle.margin = new RectOffset ( 4, 4, 4, 4 );
@@ -246,9 +250,9 @@ public class UserInterface : MonoBehaviour
 		hiddenLeftLargeStyle = new GUIStyle ();
 		hiddenLeftLargeStyle.fontSize = 48;
 		hiddenLeftLargeStyle.alignment = TextAnchor.MiddleLeft;
-		hiddenLeftLargeStyle.hover.background = guiskin.button.normal.background;
-		hiddenLeftLargeStyle.active.background = guiskin.button.active.background;
-		hiddenLeftLargeStyle.onNormal.background = guiskin.button.active.background;
+		hiddenLeftLargeStyle.hover.background = greySkin.button.normal.background;
+		hiddenLeftLargeStyle.active.background = greySkin.button.active.background;
+		hiddenLeftLargeStyle.onNormal.background = greySkin.button.active.background;
 		hiddenLeftLargeStyle.border = new RectOffset ( 6, 6, 6, 4 );
 		hiddenLeftLargeStyle.padding = new RectOffset ( 6, 6, 3, 3 );
 		hiddenLeftLargeStyle.margin = new RectOffset ( 4, 4, 4, 4 );
@@ -256,8 +260,8 @@ public class UserInterface : MonoBehaviour
 		hiddenLeftMediumStyle = new GUIStyle ();
 		hiddenLeftMediumStyle.fontSize = 24;
 		hiddenLeftMediumStyle.alignment = TextAnchor.MiddleLeft;
-		hiddenLeftMediumStyle.hover.background = guiskin.button.normal.background;
-		hiddenLeftMediumStyle.active.background = guiskin.button.active.background;
+		hiddenLeftMediumStyle.hover.background = greySkin.button.normal.background;
+		hiddenLeftMediumStyle.active.background = greySkin.button.active.background;
 		hiddenLeftMediumStyle.border = new RectOffset ( 6, 6, 6, 4 );
 		hiddenLeftMediumStyle.padding = new RectOffset ( 6, 6, 3, 3 );
 		hiddenLeftMediumStyle.margin = new RectOffset ( 4, 4, 4, 4 );
@@ -265,11 +269,21 @@ public class UserInterface : MonoBehaviour
 		hiddenLeftSmallStyle = new GUIStyle ();
 		hiddenLeftSmallStyle.fontSize = 16;
 		hiddenLeftSmallStyle.alignment = TextAnchor.MiddleLeft;
-		hiddenLeftSmallStyle.hover.background = guiskin.button.normal.background;
-		hiddenLeftSmallStyle.active.background = guiskin.button.active.background;
+		hiddenLeftSmallStyle.hover.background = greySkin.button.normal.background;
+		hiddenLeftSmallStyle.active.background = greySkin.button.active.background;
 		hiddenLeftSmallStyle.border = new RectOffset ( 6, 6, 6, 4 );
 		hiddenLeftSmallStyle.padding = new RectOffset ( 6, 6, 3, 3 );
 		hiddenLeftSmallStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		
+		
+		cardStyle = new GUIStyle ();
+		cardStyle.fontSize = 48;
+		cardStyle.alignment = TextAnchor.MiddleLeft;
+		cardStyle.hover.background = blueSkin.button.active.background;
+		cardStyle.active.background = blueSkin.button.hover.background;
+		cardStyle.border = new RectOffset ( 6, 6, 6, 4 );
+		cardStyle.padding = new RectOffset ( 6, 6, 3, 3 );
+		cardStyle.margin = new RectOffset ( 4, 4, 4, 4 );
 		
 		
 		guicolor = new Color ( 1, 1, 1, 0 );
@@ -311,13 +325,12 @@ public class UserInterface : MonoBehaviour
 	void OnGUI ()
 	{
 		
-		GUI.skin = guiskin;
+		GUI.skin = greySkin;
 		
 		
 		if ( debugLog.debugLogActive == true )
 		{
 			
-			GUI.skin = guiskin;
 			GUILayout.BeginArea ( new Rect ( 0, 0, Screen.width, Screen.height ));
 			debugScrollPosition = GUILayout.BeginScrollView ( debugScrollPosition, false, false, GUILayout.Width ( Screen.width ), GUILayout.Height ( Screen.height ));
 			GUILayout.FlexibleSpace ();
@@ -369,7 +382,7 @@ public class UserInterface : MonoBehaviour
 					GUILayout.BeginHorizontal ();
 					GUILayout.FlexibleSpace ();
 				
-					if ( GUILayout.Button ( "Play", buttonCenterLargeStyle, GUILayout.Width ( 350 )))
+					if ( GUILayout.Button ( "Play", buttonCenterLargeStyle, GUILayout.Width ( 350 )) && fadeOUT == false && fadeIN == false )
 					{
 						
 						if ( play == false )
@@ -387,7 +400,7 @@ public class UserInterface : MonoBehaviour
 						}
 					}
 					
-					if ( GUILayout.Button ( "Options", buttonCenterLargeStyle, GUILayout.Width ( 350 )))
+					if ( GUILayout.Button ( "Options", buttonCenterLargeStyle, GUILayout.Width ( 350 )) && fadeOUT == false && fadeIN == false )
 					{
 						
 						if ( options == false )
@@ -520,6 +533,7 @@ public class UserInterface : MonoBehaviour
 		{
 			
 			GUILayout.BeginHorizontal ();
+			GUILayout.FlexibleSpace ();
 			GUILayout.Label ( "Host Match on: ", labelLeftMediumStyle );
 			hostPort = GUILayout.TextField ( hostPort, 5, textFieldStyle );
 			if ( GUILayout.Button ( "Host", buttonCenterSmallStyle ))
@@ -556,6 +570,7 @@ public class UserInterface : MonoBehaviour
 		{
 				
 			GUILayout.BeginHorizontal ();
+			GUILayout.FlexibleSpace ();
 			GUILayout.Label ( "Connect to: ", labelLeftMediumStyle );
 			directIP = GUILayout.TextField ( directIP, 22, textFieldStyle, GUILayout.MinWidth ( 120 ));
 			directPort = GUILayout.TextField ( directPort, 5, textFieldStyle, GUILayout.MinWidth ( 50 ));
@@ -829,7 +844,7 @@ public class UserInterface : MonoBehaviour
 		GUILayout.FlexibleSpace ();
 		GUILayout.BeginHorizontal ();
 			
-			if ( GUILayout.Button ( deckManager.masterDeck.supportCards[0].image, hiddenCenterSmallStyle ))
+			if ( GUILayout.Button ( deckManager.masterDeck.supportCards[0].image, cardStyle ))
 			{
 				
 				UnityEngine.Debug.Log ( "Draw/Play Card" );
