@@ -2,9 +2,23 @@ using System;
 using UnityEngine;
 using System.Net.Sockets;
 using System.Collections;
+using System.Collections.Generic;
 //Written by Michael Bethke
+public class Opponent
+{
+	
+	public bool connected = false;
+	
+	public string name;
+	
+	public List<GameCard> cards = new List<GameCard> ();
+}
+
+
 public class NetworkManager : MonoBehaviour
 {
+	
+	DeckManager deckManager;
 	
 	internal enum ConnectionType { None, Hosting, Connecting, Connected, Playing }
 	internal ConnectionType connectionType;
@@ -14,14 +28,17 @@ public class NetworkManager : MonoBehaviour
 	internal bool info = false;
 	internal string infoString = "";
 	
+	
+	internal Opponent opponent = new Opponent ();
+	
+	
 	internal bool options = false;
-
-	internal bool opponentConnected = false;
-	internal string opponentName;
 	
 
 	void Start ()
 	{
+		
+		deckManager = GameObject.FindGameObjectWithTag ( "Manager" ).GetComponent<DeckManager> ();
 		
 		connectionType = ConnectionType.None;
 	}
@@ -43,7 +60,8 @@ public class NetworkManager : MonoBehaviour
 	public bool ShutdownHost ()
 	{
 		
-		opponentName = null;
+		opponent.name = null;
+		opponent.cards.Clear ();
 		
 		info = false;
 		infoString = null;
@@ -66,11 +84,15 @@ public class NetworkManager : MonoBehaviour
 			if ( connectionType == ConnectionType.Hosting )
 			{
 				
-				opponentName = receivedOpponentName;
+				opponent.name = receivedOpponentName;
+				opponent.cards = new List<GameCard> ();
+				
+				opponent.cards.Add ( deckManager.masterDeck.gameCards[0] );
+				
 				connectionType = ConnectionType.Connected;
 				
 				UnityEngine.Debug.Log ( "\nConnection Received" );
-				UnityEngine.Debug.Log ( "\t" + opponentName );
+				UnityEngine.Debug.Log ( "\t" + opponent.name );
 				
 				UnityEngine.Debug.Log ( "\tConnection Type Set to Connected" );
 			}
@@ -83,7 +105,7 @@ public class NetworkManager : MonoBehaviour
 		
 		UnityEngine.Debug.Log ( "\nOpponent Disconnected" );
 		
-		opponentName = null;
+		opponent.name = null;
 		
 		infoString = "Your opponent has disconnected.";
 		info = true;

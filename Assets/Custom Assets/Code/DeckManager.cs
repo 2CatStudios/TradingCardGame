@@ -30,6 +30,20 @@ public class PersonalDeck
 }
 
 
+public class Hand
+{
+	
+	public List<GameCard> cards = new List<GameCard> ();
+}
+
+
+public class Field
+{
+	
+	public List<GameCard> cards = new List<GameCard> ();
+}
+
+
 public class SupportCard
 {
 	
@@ -78,4 +92,11 @@ public class DeckManager : MonoBehaviour
 
 	internal MasterDeck masterDeck = new MasterDeck ();
 	internal PersonalDeck personalDeck = new PersonalDeck ();
+	
+	
+	public void SetupDecks ()
+	{
+		
+		
+	}
 }

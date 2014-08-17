@@ -63,7 +63,7 @@ public class ExternalInformation : MonoBehaviour
 		
 		UnityEngine.Debug.Log ( "Application Size: " + Screen.width + " x " + Screen.height );
 		UnityEngine.Debug.Log ( "Screen Size: " + Screen.currentResolution.width + " x " + Screen.currentResolution.height );
-		UnityEngine.Debug.Log ( "Refresh Rate (0 If not Obtainable): " + Screen.currentResolution.refreshRate );
+		UnityEngine.Debug.Log ( "Refresh Rate (0 if not Obtainable): " + Screen.currentResolution.refreshRate );
 		
 		
 		Thread setupLocalDirectoriesThread = new Thread ( new ThreadStart ( SetupLocalDirectories ));
@@ -420,8 +420,6 @@ public class ExternalInformation : MonoBehaviour
 		
 		debugLog.ReceiveMessage ( "\tReading Personal Deck" );
 		ReadPersonalDeck ();
-		
-		debugLog.ReceiveMessage ( "\t\tPersonal Deck Loaded" );
 	
 		Thread initializeCardsThread = new Thread ( new ThreadStart ( InitializeCards ));
 		initializeCardsThread.Start ();
@@ -566,8 +564,8 @@ public class ExternalInformation : MonoBehaviour
 	public void WritePersonalDeck ()
 	{
 /*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/		
-		deckManager.personalDeck.cardIdentifiers.Add ( deckManager.masterDeck.gameCards[3].cardIdentifier.Substring ( 0, 2 ));
-		deckManager.personalDeck.cardIdentifiers.Add ( deckManager.masterDeck.gameCards[1].cardIdentifier.Substring ( 0, 2 ));
+/*	*/	deckManager.personalDeck.cardIdentifiers.Add ( deckManager.masterDeck.gameCards[3].cardIdentifier.Substring ( 0, 2 ));	/*	*/
+/*	*/	deckManager.personalDeck.cardIdentifiers.Add ( deckManager.masterDeck.gameCards[1].cardIdentifier.Substring ( 0, 2 ));	/*	*/
 /*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/		
 		
 		XmlSerializer serializerPD = new XmlSerializer ( deckManager.personalDeck.GetType ());
@@ -591,6 +589,8 @@ public class ExternalInformation : MonoBehaviour
 			deckManager.personalDeck = xmlPD.DeserializeXml<PersonalDeck>();
 		}
 		
+		debugLog.ReceiveMessage ( "\t\tRead into Memory" );
+		
 		foreach ( String cardID in deckManager.personalDeck.cardIdentifiers )
 		{
 			
@@ -602,18 +602,16 @@ public class ExternalInformation : MonoBehaviour
 				if ( deckManager.masterDeck.gameCards[searchIndex].cardIdentifier.Substring ( 0, 2 ) == cardID )
 				{
 					
-					debugLog.ReceiveMessage ( deckManager.masterDeck.gameCards[searchIndex].cardIdentifier.Substring ( 0, 2 ) + " == " + cardID );
 					deckManager.personalDeck.cards.Add ( deckManager.masterDeck.gameCards[searchIndex] );
 					
 					cardFound = true;
-				} else {
-				
-					debugLog.ReceiveMessage ( deckManager.masterDeck.gameCards[searchIndex].cardIdentifier.Substring ( 0, 2 ) + " != " + cardID );
 				}
 				
 				searchIndex += 1;
 			}
 		}
+		
+		debugLog.ReceiveMessage ( "\t\tPersonal Deck Assigned" );
 	}
 	
 	

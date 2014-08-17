@@ -714,7 +714,7 @@ public class UserInterface : MonoBehaviour
 			if ( networkManager.hosting == true && networkManager.connectionType == NetworkManager.ConnectionType.Connected )
 			{
 				
-				GUILayout.Label ( preferencesManager.preferences.playerName + " VS " + networkManager.opponentName, labelCenterLargeStyle );
+				GUILayout.Label ( preferencesManager.preferences.playerName + " VS " + networkManager.opponent.name, labelCenterLargeStyle );
 				
 				GUILayout.BeginHorizontal ();
 				GUILayout.FlexibleSpace ();
@@ -731,6 +731,7 @@ public class UserInterface : MonoBehaviour
 					if ( GUILayout.Button ( "Begin Match", buttonCenterLargeStyle ))
 					{
 						
+						deckManager.SetupDecks ();
 						networkManager.connectionType = NetworkManager.ConnectionType.Playing;
 					}
 					
@@ -803,50 +804,52 @@ public class UserInterface : MonoBehaviour
 	{
 		
 		GUILayout.BeginVertical ();
-		
 		GUILayout.BeginHorizontal ();
 		GUILayout.FlexibleSpace ();
-		GUILayout.Label ( preferencesManager.preferences.playerName + " VS " + networkManager.opponentName, labelCenterLargeStyle );
-		GUILayout.FlexibleSpace ();
-		GUILayout.EndHorizontal ();
-		
-		GUILayout.BeginHorizontal ();
-		GUILayout.FlexibleSpace ();
-		foreach ( GameCard card in deckManager.personalDeck.cards )
-		{
 			
-			GUILayout.FlexibleSpace ();
-			GUILayout.Button ( card.image, hiddenCenterSmallStyle );
-			GUILayout.FlexibleSpace ();
-		}
-		GUILayout.FlexibleSpace ();
+			GUILayout.Label ( preferencesManager.preferences.playerName + " VS " + networkManager.opponent.name, labelCenterLargeStyle );
+		
+		GUILayout.FlexibleSpace ();	
 		GUILayout.EndHorizontal ();
-		
-		GUILayout.FlexibleSpace ();
-		
 		GUILayout.BeginHorizontal ();
-		GUILayout.Button ( deckManager.masterDeck.supportCards[0].image, hiddenCenterSmallStyle );
-		GUILayout.FlexibleSpace ();
-		
-		foreach ( GameCard card in deckManager.masterDeck.gameCards )
-		{
+		GUILayout.Space ( 10 );
+		GUILayout.BeginVertical ();
 			
-			GUILayout.Button ( card.image, hiddenCenterSmallStyle );
-		}
-		
+			GUILayout.Label ( networkManager.opponent.name, labelLeftLargeStyle );
+			GUILayout.Label ( "1000/1000 HP", labelLeftMediumStyle );
+			
+			GUILayout.Label ( "", labelLeftSmallStyle );
+			
+			GUILayout.Label ( networkManager.opponent.cards.Count + " Cards in Personal Deck", labelLeftMediumStyle );
+			GUILayout.Label ( "0 Cards Defeated", labelLeftSmallStyle );
+			GUILayout.Label ( "0 Cards Won", labelLeftSmallStyle );
+			
+		GUILayout.EndVertical ();	
+		GUILayout.EndHorizontal ();
+		GUILayout.FlexibleSpace ();
+		GUILayout.BeginHorizontal ();
+			
+			if ( GUILayout.Button ( deckManager.masterDeck.supportCards[0].image, hiddenCenterSmallStyle ))
+			{
+				
+				UnityEngine.Debug.Log ( "Draw/Play Card" );
+			}
+			
 		GUILayout.FlexibleSpace ();
 		GUILayout.BeginVertical ();
-		
-		GUILayout.Label ( preferencesManager.preferences.playerName, labelLeftLargeStyle );
-		GUILayout.Label ( "1000/1000 HP", labelLeftMediumStyle );
-		GUILayout.Label ( "", labelLeftSmallStyle );
-		GUILayout.Label ( deckManager.masterDeck.gameCards.Length + " Cards in MasterDeck", labelLeftMediumStyle );
-		
+				
+			GUILayout.Label ( preferencesManager.preferences.playerName, labelLeftLargeStyle );
+			GUILayout.Label ( "1000/1000 HP", labelLeftMediumStyle );
+				
+			GUILayout.Label ( "", labelLeftSmallStyle );
+				
+			GUILayout.Label ( deckManager.personalDeck.cards.Count + " Cards in Personal Deck", labelLeftMediumStyle );
+			GUILayout.Label ( "0 Cards Defeated", labelLeftSmallStyle );
+			GUILayout.Label ( "0 Cards Won", labelLeftSmallStyle );
+				
 		GUILayout.EndVertical ();
-		
-		GUILayout.FlexibleSpace ();
+		GUILayout.Space ( 10 );
 		GUILayout.EndHorizontal ();
-		
 		GUILayout.EndVertical ();
 	}
 }
