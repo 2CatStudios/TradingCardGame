@@ -34,13 +34,15 @@ public class Hand
 {
 	
 	public List<GameCard> cards = new List<GameCard> ();
+	public List<int> removeList = new List<int> ();
 }
 
 
 public class Field
 {
 	
-	public List<GameCard> cards = new List<GameCard> ();
+	public List<GameCard> playerCards = new List<GameCard> ();
+	public List<GameCard> opponentCards = new List<GameCard> ();
 }
 
 
@@ -93,10 +95,17 @@ public class DeckManager : MonoBehaviour
 	internal MasterDeck masterDeck = new MasterDeck ();
 	internal PersonalDeck personalDeck = new PersonalDeck ();
 	
+	internal Hand hand = new Hand ();
+	internal Field field = new Field ();
+	
 	
 	public void SetupDecks ()
 	{
 		
-		
+		hand.cards.Add ( masterDeck.gameCards[UnityEngine.Random.Range ( 0, masterDeck.gameCards.Length - 1 )] );
+		hand.cards.Add ( masterDeck.gameCards[UnityEngine.Random.Range ( 0, masterDeck.gameCards.Length - 1 )] );
+		hand.cards.Add ( masterDeck.gameCards[UnityEngine.Random.Range ( 0, masterDeck.gameCards.Length - 1 )] );
+		hand.cards.Add ( masterDeck.gameCards[UnityEngine.Random.Range ( 0, masterDeck.gameCards.Length - 1 )] );
+
 	}
 }

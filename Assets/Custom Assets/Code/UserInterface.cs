@@ -79,6 +79,7 @@ public class UserInterface : MonoBehaviour
 	Vector2 startupWindowScrollPosition;
 	Vector2 optionsWindowScrollView;
 	Vector2 playWindowScrollView;
+	Vector2 gameHandScrollView;
 	
 	bool fadeIN = false;
 	bool fadeOUT = false;
@@ -818,6 +819,8 @@ public class UserInterface : MonoBehaviour
 	void GameWindow ( int windowID )
 	{
 		
+		GUI.skin = blueSkin;
+		
 		GUILayout.BeginVertical ();
 		GUILayout.BeginHorizontal ();
 		GUILayout.FlexibleSpace ();
@@ -836,8 +839,8 @@ public class UserInterface : MonoBehaviour
 			GUILayout.Label ( "", labelLeftSmallStyle );
 			
 			GUILayout.Label ( networkManager.opponent.cards.Count + " Cards in Personal Deck", labelLeftMediumStyle );
-			GUILayout.Label ( "0 Cards Defeated", labelLeftSmallStyle );
-			GUILayout.Label ( "0 Cards Won", labelLeftSmallStyle );
+			GUILayout.Label ( "0 Cards Captured", labelLeftSmallStyle );
+			GUILayout.Label ( "0 Cards Lost", labelLeftSmallStyle );
 			
 		GUILayout.EndVertical ();	
 		GUILayout.EndHorizontal ();
@@ -847,9 +850,34 @@ public class UserInterface : MonoBehaviour
 			if ( GUILayout.Button ( deckManager.masterDeck.supportCards[0].image, cardStyle ))
 			{
 				
-				UnityEngine.Debug.Log ( "Draw/Play Card" );
+				if ( deckManager.hand.cards.Count < 4 )
+				{
+					
+					deckManager.hand.cards.Add ( deckManager.masterDeck.gameCards[Random.Range ( 0, deckManager.masterDeck.gameCards.Length - 1 )] );
+				}
 			}
 			
+		GUILayout.FlexibleSpace ();
+		gameHandScrollView = GUILayout.BeginScrollView ( gameHandScrollView, GUILayout.Width ( 836 ), GUILayout.Height ( 270 ));
+		GUILayout.BeginHorizontal ();
+		
+			for ( int handIndex = deckManager.hand.cards.Count - 1; handIndex >= 0; handIndex -= 1 )
+			{
+				
+				if ( GUILayout.Button ( deckManager.hand.cards[handIndex].image, cardStyle, GUILayout.Width ( 204 )))
+				{
+					
+					if ( deckManager.field.playerCards.Count < 3 )
+					{
+						
+						deckManager.field.playerCards.Add ( deckManager.hand.cards[handIndex] );
+						deckManager.hand.cards.RemoveAt ( handIndex );
+					}
+				}
+			}
+
+		GUILayout.EndHorizontal ();
+		GUILayout.EndScrollView ();
 		GUILayout.FlexibleSpace ();
 		GUILayout.BeginVertical ();
 				
@@ -859,12 +887,13 @@ public class UserInterface : MonoBehaviour
 			GUILayout.Label ( "", labelLeftSmallStyle );
 				
 			GUILayout.Label ( deckManager.personalDeck.cards.Count + " Cards in Personal Deck", labelLeftMediumStyle );
-			GUILayout.Label ( "0 Cards Defeated", labelLeftSmallStyle );
-			GUILayout.Label ( "0 Cards Won", labelLeftSmallStyle );
+			GUILayout.Label ( "0 Cards Captured", labelLeftSmallStyle );
+			GUILayout.Label ( "0 Cards Lost", labelLeftSmallStyle );
 				
 		GUILayout.EndVertical ();
 		GUILayout.Space ( 10 );
 		GUILayout.EndHorizontal ();
+		GUILayout.Space ( 10 );
 		GUILayout.EndVertical ();
 	}
 }
