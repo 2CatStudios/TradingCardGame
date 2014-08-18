@@ -81,6 +81,10 @@ public class UserInterface : MonoBehaviour
 	Vector2 playWindowScrollView;
 	Vector2 gameHandScrollView;
 	
+	Rect bottomRect;
+	Rect bottomActiveZone;
+	private float bottomRectVelocity = 0.0F;
+	
 	bool fadeIN = false;
 	bool fadeOUT = false;
 	
@@ -100,6 +104,10 @@ public class UserInterface : MonoBehaviour
 		homePaneRect = new Rect ( 0, 0, Screen.width, Screen.height );
 		controlWindowRect = new Rect ( Screen.width/2 - 386, 204, 772, 360 );
 		gameWindowRect = new Rect ( 0, 0, Screen.width, Screen.height );
+		
+		
+		bottomRect = new Rect ( 10, Screen.height - 300, Screen.width - 20, 300 );
+		bottomActiveZone = new Rect ( 0, 0, Screen.width, 280 );
 		
 		
 		labelLeftLargeStyle = new GUIStyle ();
@@ -319,6 +327,26 @@ public class UserInterface : MonoBehaviour
 				play = false;
 				options = false;
 				fadeOUT = false;
+			}
+		}
+		
+		
+		if ( bottomActiveZone.Contains ( Input.mousePosition ))
+		{
+			
+			if ( bottomRect.y != Screen.height - 275 )
+			{
+				
+				float bottomRectYUp = Mathf.SmoothDamp ( bottomRect.y, Screen.height - 275, ref bottomRectVelocity, 0.05f );
+				bottomRect = new Rect ( 10, bottomRectYUp, Screen.width - 20, 300 );
+			}
+		} else {
+			
+			if ( bottomRect.y != Screen.height - 100 )
+			{
+				
+				float bottomRectYDown = Mathf.SmoothDamp ( bottomRect.y, Screen.height - 100, ref bottomRectVelocity, 0.05f );
+				bottomRect = new Rect ( 10, bottomRectYDown, Screen.width - 20, 300 );
 			}
 		}
 	}
@@ -836,15 +864,16 @@ public class UserInterface : MonoBehaviour
 			GUILayout.Label ( networkManager.opponent.name, labelLeftLargeStyle );
 			GUILayout.Label ( "1000/1000 HP", labelLeftMediumStyle );
 			
-			GUILayout.Label ( "", labelLeftSmallStyle );
+			//GUILayout.Label ( "", labelLeftSmallStyle );
 			
-			GUILayout.Label ( networkManager.opponent.cards.Count + " Cards in Personal Deck", labelLeftMediumStyle );
-			GUILayout.Label ( "0 Cards Captured", labelLeftSmallStyle );
-			GUILayout.Label ( "0 Cards Lost", labelLeftSmallStyle );
+			//GUILayout.Label ( networkManager.opponent.cards.Count + " Cards in Personal Deck", labelLeftMediumStyle );
+			//GUILayout.Label ( "0 Cards Captured", labelLeftSmallStyle );
+			//GUILayout.Label ( "0 Cards Lost", labelLeftSmallStyle );
 			
 		GUILayout.EndVertical ();	
 		GUILayout.EndHorizontal ();
 		GUILayout.FlexibleSpace ();
+		GUILayout.BeginArea ( bottomRect );
 		GUILayout.BeginHorizontal ();
 			
 			if ( GUILayout.Button ( deckManager.masterDeck.supportCards[0].image, cardStyle ))
@@ -893,7 +922,7 @@ public class UserInterface : MonoBehaviour
 		GUILayout.EndVertical ();
 		GUILayout.Space ( 10 );
 		GUILayout.EndHorizontal ();
-		GUILayout.Space ( 10 );
+		GUILayout.EndArea ();
 		GUILayout.EndVertical ();
 	}
 }
