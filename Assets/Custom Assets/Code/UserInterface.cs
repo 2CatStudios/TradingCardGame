@@ -14,6 +14,7 @@ public class UserInterface : MonoBehaviour
 	
 	public GUISkin greySkin;
 	public GUISkin blueSkin;
+	public GUISkin redSkin;
 	internal Rect homePaneRect;
 	Rect controlWindowRect;
 	Rect gameWindowRect;
@@ -52,7 +53,8 @@ public class UserInterface : MonoBehaviour
 	GUIStyle hiddenLeftSmallStyle;
 	
 	
-	GUIStyle cardStyle;
+	GUIStyle cardBlueStyle;
+	GUIStyle cardRedStyle;
 	GUIStyle fieldCardStyle;
 	
 	Color guicolor;
@@ -83,8 +85,6 @@ public class UserInterface : MonoBehaviour
 	Vector2 gameHandScrollView;
 	
 	
-	//Rect fieldRect;
-	
 	Rect bottomRect;
 	Rect bottomActiveZone;
 	private float bottomRectVelocity = 0.0F;
@@ -109,9 +109,6 @@ public class UserInterface : MonoBehaviour
 		homePaneRect = new Rect ( 0, 0, Screen.width, Screen.height );
 		controlWindowRect = new Rect ( Screen.width/2 - 386, 204, 772, 360 );
 		gameWindowRect = new Rect ( 0, 0, Screen.width, Screen.height );
-		
-		
-		//fieldRect = new Rect ( Screen.width/2 - 320, Screen.height/2 - 320, 640, 580 );
 		
 		bottomRect = new Rect ( 10, Screen.height - 300, Screen.width - 20, 300 );
 		bottomActiveZone = new Rect ( 0, 0, Screen.width, 280 );
@@ -232,11 +229,11 @@ public class UserInterface : MonoBehaviour
 		windowStyle.onNormal.background = blueSkin.window.normal.background;
 		
 		emptyStyle = new GUIStyle ();
-		emptyStyle.fontSize = 48;
+		/*emptyStyle.fontSize = 48;
 		emptyStyle.alignment = TextAnchor.MiddleLeft;
 		emptyStyle.border = new RectOffset ( 6, 6, 6, 4 );
 		emptyStyle.padding = new RectOffset ( 6, 6, 3, 3 );
-		emptyStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		emptyStyle.margin = new RectOffset ( 4, 4, 4, 4 )*/
 		
 		
 		hiddenCenterLargeStyle = new GUIStyle ();
@@ -297,16 +294,25 @@ public class UserInterface : MonoBehaviour
 		hiddenLeftSmallStyle.margin = new RectOffset ( 4, 4, 4, 4 );
 		
 		
-		cardStyle = new GUIStyle ();
-		cardStyle.fontSize = 48;
-		cardStyle.alignment = TextAnchor.MiddleLeft;
-		cardStyle.hover.background = blueSkin.button.active.background;
-		cardStyle.active.background = blueSkin.button.hover.background;
-		cardStyle.border = new RectOffset ( 6, 6, 6, 4 );
-		cardStyle.padding = new RectOffset ( 6, 6, 3, 3 );
-		cardStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		cardBlueStyle = new GUIStyle ();
+		cardBlueStyle.fontSize = 48;
+		cardBlueStyle.alignment = TextAnchor.MiddleLeft;
+		cardBlueStyle.hover.background = blueSkin.button.active.background;
+		cardBlueStyle.active.background = blueSkin.button.hover.background;
+		cardBlueStyle.border = new RectOffset ( 6, 6, 6, 4 );
+		cardBlueStyle.padding = new RectOffset ( 6, 6, 3, 3 );
+		cardBlueStyle.margin = new RectOffset ( 4, 4, 4, 4 );
 		
-		fieldCardStyle = cardStyle;
+		cardRedStyle = new GUIStyle ();
+		cardRedStyle.fontSize = 48;
+		cardRedStyle.alignment = TextAnchor.MiddleLeft;
+		cardRedStyle.hover.background = redSkin.button.active.background;
+		cardRedStyle.active.background = redSkin.button.hover.background;
+		cardRedStyle.border = new RectOffset ( 6, 6, 6, 4 );
+		cardRedStyle.padding = new RectOffset ( 6, 6, 3, 3 );
+		cardRedStyle.margin = new RectOffset ( 4, 4, 4, 4 );
+		
+		fieldCardStyle = cardBlueStyle;
 		
 		
 		guicolor = new Color ( 1, 1, 1, 0 );
@@ -358,6 +364,10 @@ public class UserInterface : MonoBehaviour
 				play = false;
 				options = false;
 				fadeOUT = false;
+				hostSection = false;
+				directConnectSection = false;
+				officialConnectSection = false;
+				savedServerSection = false;
 			}
 		}
 		
@@ -383,9 +393,10 @@ public class UserInterface : MonoBehaviour
 				bottomRect = new Rect ( 10, bottomRectYDown, Screen.width - 20, 300 );
 			}
 			
-			fieldCardStyle = cardStyle;
+			fieldCardStyle = cardBlueStyle;
 		}
 	}
+	
 	
 	void OnGUI ()
 	{
@@ -910,7 +921,7 @@ public class UserInterface : MonoBehaviour
 			while ( fieldOpponentIndex < 3 )
 			{
 				
-				GUILayout.Label ( deckManager.field.opponentCards[fieldOpponentIndex].image, cardStyle );
+				GUILayout.Button ( deckManager.field.opponentCards[fieldOpponentIndex].image, cardRedStyle );
 				fieldOpponentIndex += 1;
 			}
     	         
@@ -946,7 +957,7 @@ public class UserInterface : MonoBehaviour
 		GUILayout.BeginArea ( bottomRect );
 		GUILayout.BeginHorizontal ();
 			
-			if ( GUILayout.Button ( deckManager.masterDeck.supportCards[0].image, cardStyle ))
+			if ( GUILayout.Button ( deckManager.masterDeck.supportCards[0].image, cardBlueStyle ))
 			{
 				
 				if ( deckManager.hand.cards.Count < 4 && deckManager.heldCard == null )
@@ -963,7 +974,7 @@ public class UserInterface : MonoBehaviour
 			for ( int handIndex = deckManager.hand.cards.Count - 1; handIndex >= 0; handIndex -= 1 )
 			{
 				
-				if ( GUILayout.Button ( deckManager.hand.cards[handIndex].image, cardStyle, GUILayout.Width ( 204 )))
+				if ( GUILayout.Button ( deckManager.hand.cards[handIndex].image, cardBlueStyle, GUILayout.Width ( 204 )))
 				{
 					
 					UnityEngine.Debug.Log ( "Clicked Hand" );
@@ -986,10 +997,17 @@ public class UserInterface : MonoBehaviour
 			GUILayout.Label ( "1000/1000 HP", labelLeftMediumStyle );
 				
 			GUILayout.Label ( "", labelLeftSmallStyle );
+
+			GUILayout.Button ( "Send Message", buttonCenterMediumStyle );
+			GUILayout.Button ( "End Turn", buttonCenterMediumStyle );
+			
+			GUILayout.Label ( "", labelLeftSmallStyle );
+			
+			if ( GUILayout.Button ( "Leave Game", buttonCenterMediumStyle ))
+			{
 				
-			GUILayout.Label ( deckManager.personalDeck.cards.Count + " Cards in Personal Deck", labelLeftMediumStyle );
-			GUILayout.Label ( "0 Cards Captured", labelLeftSmallStyle );
-			GUILayout.Label ( "0 Cards Lost", labelLeftSmallStyle );
+				networkManager.ShutdownHost ();
+			}
 				
 		GUILayout.EndVertical ();
 		GUILayout.Space ( 10 );
