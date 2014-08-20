@@ -53,6 +53,7 @@ public class UserInterface : MonoBehaviour
 	
 	
 	GUIStyle cardStyle;
+	GUIStyle fieldCardStyle;
 	
 	Color guicolor;
 	
@@ -81,9 +82,13 @@ public class UserInterface : MonoBehaviour
 	Vector2 playWindowScrollView;
 	Vector2 gameHandScrollView;
 	
+	
+	//Rect fieldRect;
+	
 	Rect bottomRect;
 	Rect bottomActiveZone;
 	private float bottomRectVelocity = 0.0F;
+	
 	
 	bool fadeIN = false;
 	bool fadeOUT = false;
@@ -105,6 +110,8 @@ public class UserInterface : MonoBehaviour
 		controlWindowRect = new Rect ( Screen.width/2 - 386, 204, 772, 360 );
 		gameWindowRect = new Rect ( 0, 0, Screen.width, Screen.height );
 		
+		
+		//fieldRect = new Rect ( Screen.width/2 - 320, Screen.height/2 - 320, 640, 580 );
 		
 		bottomRect = new Rect ( 10, Screen.height - 300, Screen.width - 20, 300 );
 		bottomActiveZone = new Rect ( 0, 0, Screen.width, 280 );
@@ -225,6 +232,11 @@ public class UserInterface : MonoBehaviour
 		windowStyle.onNormal.background = blueSkin.window.normal.background;
 		
 		emptyStyle = new GUIStyle ();
+		emptyStyle.fontSize = 48;
+		emptyStyle.alignment = TextAnchor.MiddleLeft;
+		emptyStyle.border = new RectOffset ( 6, 6, 6, 4 );
+		emptyStyle.padding = new RectOffset ( 6, 6, 3, 3 );
+		emptyStyle.margin = new RectOffset ( 4, 4, 4, 4 );
 		
 		
 		hiddenCenterLargeStyle = new GUIStyle ();
@@ -294,6 +306,8 @@ public class UserInterface : MonoBehaviour
 		cardStyle.padding = new RectOffset ( 6, 6, 3, 3 );
 		cardStyle.margin = new RectOffset ( 4, 4, 4, 4 );
 		
+		fieldCardStyle = cardStyle;
+		
 		
 		guicolor = new Color ( 1, 1, 1, 0 );
 	}
@@ -301,6 +315,23 @@ public class UserInterface : MonoBehaviour
 	
 	void Update ()
 	{
+		
+		if ( Input.GetKeyDown ( KeyCode.Escape ))
+		{
+			
+			if ( networkManager.connectionType == NetworkManager.ConnectionType.Playing && networkManager.hosting == true )
+			{
+				
+				if ( deckManager.heldCard != null )
+				{
+					
+					deckManager.hand.cards.Insert ( deckManager.heldFromDeckIndex, deckManager.heldCard );
+					deckManager.heldCard = null;
+					
+				}
+			}
+		}
+		
 
 		if ( fadeIN == true )
 		{
@@ -340,6 +371,9 @@ public class UserInterface : MonoBehaviour
 				float bottomRectYUp = Mathf.SmoothDamp ( bottomRect.y, Screen.height - 275, ref bottomRectVelocity, 0.05f );
 				bottomRect = new Rect ( 10, bottomRectYUp, Screen.width - 20, 300 );
 			}
+			
+			fieldCardStyle = emptyStyle;
+			
 		} else {
 			
 			if ( bottomRect.y != Screen.height - 100 )
@@ -348,6 +382,8 @@ public class UserInterface : MonoBehaviour
 				float bottomRectYDown = Mathf.SmoothDamp ( bottomRect.y, Screen.height - 100, ref bottomRectVelocity, 0.05f );
 				bottomRect = new Rect ( 10, bottomRectYDown, Screen.width - 20, 300 );
 			}
+			
+			fieldCardStyle = cardStyle;
 		}
 	}
 	
@@ -355,7 +391,6 @@ public class UserInterface : MonoBehaviour
 	{
 		
 		GUI.skin = greySkin;
-		
 		
 		if ( debugLog.debugLogActive == true )
 		{
@@ -568,14 +603,14 @@ public class UserInterface : MonoBehaviour
 			if ( GUILayout.Button ( "Host", buttonCenterSmallStyle ))
 			{
 				
-				UnityEngine.Debug.Log ( "\nInitializing Host" );
+				debugLog.ReceiveMessage ( "\nInitializing Host" );
 				if ( networkManager.SetupHost ( hostPort ))
 				{
 					
-					UnityEngine.Debug.Log ( "\tHosting Enabled Sucessfully" );
+					debugLog.ReceiveMessage ( "\tHosting Enabled Sucessfully" );
 				} else {
 					
-					UnityEngine.Debug.LogError ( "\tUnable to Initialize Hosting" );
+					debugLog.ReceiveMessage ( "\tERROR: Unable to Initialize Hosting" );
 				}
 			}
 			GUILayout.FlexibleSpace ();
@@ -607,7 +642,7 @@ public class UserInterface : MonoBehaviour
 			if ( GUILayout.Button ( "Save Server", buttonCenterSmallStyle ))
 			{
 				
-				UnityEngine.Debug.Log ( "\nSaving Server [" + directIP + ", " + directPort + ", " + directName + "]" );
+				debugLog.ReceiveMessage ( "\nSaving Server [" + directIP + ", " + directPort + ", " + directName + "]" );
 				externalInformation.SaveServer ( directIP, directPort, directName );
 			}
 			if ( GUILayout.Button ( "Connect", buttonCenterSmallStyle ))
@@ -680,7 +715,7 @@ public class UserInterface : MonoBehaviour
 					if ( GUILayout.Button ( "Delete", buttonCenterMediumStyle, GUILayout.Width ( 100 )))
 					{
 						
-						UnityEngine.Debug.Log ( "\nDeleting Server " + savedServer.name + " (" + savedServer.index + ")" );
+						debugLog.ReceiveMessage ( "\nDeleting Server " + savedServer.name + " (" + savedServer.index + ")" );
 						externalInformation.RemoveSavedServer ( savedServer.index );
 					}
 					GUILayout.EndHorizontal ();
@@ -789,14 +824,14 @@ public class UserInterface : MonoBehaviour
 					if ( GUILayout.Button ( "Boot Opponent", buttonCenterMediumStyle ))
 					{
 						
-						UnityEngine.Debug.Log ( "\nBooting Opponent" );
+						debugLog.ReceiveMessage ( "\nBooting Opponent" );
 						if ( networkManager.BootOpponent ())
 						{
 							
-							UnityEngine.Debug.Log ( "\tOpponent Disconnected Successfully" );
+							debugLog.ReceiveMessage ( "\tOpponent Disconnected Successfully" );
 						} else {
 							
-							UnityEngine.Debug.LogError ( "\tUnable to Disconnect Opponent" );
+							debugLog.ReceiveMessage ( "\tERROR: Unable to Disconnect Opponent" );
 						}
 					}
 				
@@ -822,14 +857,14 @@ public class UserInterface : MonoBehaviour
 			if ( GUILayout.Button ( "Disable Hosting", buttonCenterMediumStyle ))
 			{
 				
-				UnityEngine.Debug.Log ( "\nShutting Down Server" );
+				debugLog.ReceiveMessage ( "\nShutting Down Server" );
 				if ( networkManager.ShutdownHost ())
 				{
 					
-					UnityEngine.Debug.Log ( "\tHosting Disabled Successfully" );
+					debugLog.ReceiveMessage ( "\tHosting Disabled Successfully" );
 				} else {
 					
-					UnityEngine.Debug.LogError ( "\tUnable to Disable Hosting" );
+					debugLog.ReceiveMessage ( "\tERROR: Unable to Disable Hosting" );
 				}
 					
 				play = true;
@@ -864,14 +899,49 @@ public class UserInterface : MonoBehaviour
 			GUILayout.Label ( networkManager.opponent.name, labelLeftLargeStyle );
 			GUILayout.Label ( "1000/1000 HP", labelLeftMediumStyle );
 			
-			//GUILayout.Label ( "", labelLeftSmallStyle );
-			
-			//GUILayout.Label ( networkManager.opponent.cards.Count + " Cards in Personal Deck", labelLeftMediumStyle );
-			//GUILayout.Label ( "0 Cards Captured", labelLeftSmallStyle );
-			//GUILayout.Label ( "0 Cards Lost", labelLeftSmallStyle );
-			
-		GUILayout.EndVertical ();	
+		GUILayout.EndVertical ();
 		GUILayout.EndHorizontal ();
+		
+		GUILayout.BeginVertical ();
+		GUILayout.BeginHorizontal ();
+    	GUILayout.FlexibleSpace ();
+			
+			int fieldOpponentIndex = 0;
+			while ( fieldOpponentIndex < 3 )
+			{
+				
+				GUILayout.Label ( deckManager.field.opponentCards[fieldOpponentIndex].image, cardStyle );
+				fieldOpponentIndex += 1;
+			}
+    	         
+		GUILayout.FlexibleSpace ();
+		GUILayout.EndHorizontal ();
+		GUILayout.Space ( 10 );
+		GUILayout.BeginHorizontal ();
+		GUILayout.FlexibleSpace ();
+    	         
+			int fieldPlayerIndex = 0;
+			while ( fieldPlayerIndex < 3 )
+			{
+				
+				if ( GUILayout.Button ( deckManager.field.playerCards[fieldPlayerIndex].image, fieldCardStyle ))
+				{
+		
+					if ( deckManager.heldCard != null )
+					{
+			
+						deckManager.field.playerCards[fieldPlayerIndex] = deckManager.heldCard;
+						deckManager.heldCard = null;
+						deckManager.heldFromDeckIndex = 0;
+					}
+				}
+			     
+				fieldPlayerIndex += 1;
+			}
+		         
+		GUILayout.FlexibleSpace ();
+		GUILayout.EndHorizontal ();
+		GUILayout.EndVertical ();
 		GUILayout.FlexibleSpace ();
 		GUILayout.BeginArea ( bottomRect );
 		GUILayout.BeginHorizontal ();
@@ -879,10 +949,10 @@ public class UserInterface : MonoBehaviour
 			if ( GUILayout.Button ( deckManager.masterDeck.supportCards[0].image, cardStyle ))
 			{
 				
-				if ( deckManager.hand.cards.Count < 4 )
+				if ( deckManager.hand.cards.Count < 4 && deckManager.heldCard == null )
 				{
 					
-					deckManager.hand.cards.Add ( deckManager.masterDeck.gameCards[Random.Range ( 0, deckManager.masterDeck.gameCards.Length - 1 )] );
+					deckManager.hand.cards.Add ( deckManager.masterDeck.gameCards[Random.Range ( 0, deckManager.masterDeck.gameCards.Length )] );
 				}
 			}
 			
@@ -896,11 +966,13 @@ public class UserInterface : MonoBehaviour
 				if ( GUILayout.Button ( deckManager.hand.cards[handIndex].image, cardStyle, GUILayout.Width ( 204 )))
 				{
 					
-					if ( deckManager.field.playerCards.Count < 3 )
+					UnityEngine.Debug.Log ( "Clicked Hand" );
+					if ( deckManager.heldCard == null )
 					{
-						
-						deckManager.field.playerCards.Add ( deckManager.hand.cards[handIndex] );
+					
+						deckManager.heldCard = deckManager.hand.cards[handIndex];
 						deckManager.hand.cards.RemoveAt ( handIndex );
+						deckManager.heldFromDeckIndex = handIndex;
 					}
 				}
 			}
@@ -924,5 +996,11 @@ public class UserInterface : MonoBehaviour
 		GUILayout.EndHorizontal ();
 		GUILayout.EndArea ();
 		GUILayout.EndVertical ();
+		
+		if ( deckManager.heldCard != null )
+		{
+
+			GUI.Label ( new Rect ( Input.mousePosition.x, Screen.height - Input.mousePosition.y, 192, 256 ), deckManager.heldCard.image );
+		}
 	}
 }

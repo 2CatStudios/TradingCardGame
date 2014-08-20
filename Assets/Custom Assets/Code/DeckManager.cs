@@ -56,6 +56,12 @@ public class SupportCard
 	
 	[XmlIgnore]
 	public Texture2D image;
+	
+	public GameCard ToGameCard ()
+	{
+		
+		return new GameCard ( cardVersion, name, "0", "0", new Action (), image );
+	}
 }
 
 
@@ -74,6 +80,18 @@ public class GameCard
 	
 	[XmlIgnore]
 	public Texture2D image;
+	
+	public GameCard () : this ( "", "", "", "", null, null ) {}
+	public GameCard ( string _cardIdentifier, string _name, string _hitPoints, string _focus, Action _action, Texture2D _image )
+	{
+
+		this.cardIdentifier = _cardIdentifier;
+		this.name = _name;
+		this.hitPoints = _hitPoints;
+		this.focus = _focus;
+		this.action = _action;
+		this.image = _image;
+	}
 }
 
 
@@ -95,17 +113,33 @@ public class DeckManager : MonoBehaviour
 	internal MasterDeck masterDeck = new MasterDeck ();
 	internal PersonalDeck personalDeck = new PersonalDeck ();
 	
-	internal Hand hand = new Hand ();
-	internal Field field = new Field ();
+	internal Hand hand;
+	internal Field field;
+	
+	internal GameCard heldCard;
+	internal int heldFromDeckIndex;
 	
 	
 	public void SetupDecks ()
 	{
 		
-		hand.cards.Add ( masterDeck.gameCards[UnityEngine.Random.Range ( 0, masterDeck.gameCards.Length - 1 )] );
-		hand.cards.Add ( masterDeck.gameCards[UnityEngine.Random.Range ( 0, masterDeck.gameCards.Length - 1 )] );
-		hand.cards.Add ( masterDeck.gameCards[UnityEngine.Random.Range ( 0, masterDeck.gameCards.Length - 1 )] );
-		hand.cards.Add ( masterDeck.gameCards[UnityEngine.Random.Range ( 0, masterDeck.gameCards.Length - 1 )] );
-
+		hand = new Hand ();
+		field = new Field ();
+		
+		hand.cards.Add ( masterDeck.gameCards[UnityEngine.Random.Range ( 0, masterDeck.gameCards.Length )] );
+		hand.cards.Add ( masterDeck.gameCards[UnityEngine.Random.Range ( 0, masterDeck.gameCards.Length )] );
+		hand.cards.Add ( masterDeck.gameCards[UnityEngine.Random.Range ( 0, masterDeck.gameCards.Length )] );
+		hand.cards.Add ( masterDeck.gameCards[UnityEngine.Random.Range ( 0, masterDeck.gameCards.Length )] );
+		
+		int setupFieldIndex = 0;
+		while ( setupFieldIndex < 3 )
+		{
+			
+			field.opponentCards.Add ( masterDeck.gameCards[UnityEngine.Random.Range ( 0, masterDeck.gameCards.Length )]);
+			field.playerCards.Add ( masterDeck.supportCards[1].ToGameCard ());
+			setupFieldIndex += 1;
+		}
+		
+		heldCard = null;
 	}
 }

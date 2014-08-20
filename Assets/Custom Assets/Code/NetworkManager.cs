@@ -18,6 +18,7 @@ public class Opponent
 public class NetworkManager : MonoBehaviour
 {
 	
+	DebugLog debugLog;
 	DeckManager deckManager;
 	
 	internal enum ConnectionType { None, Hosting, Connecting, Connected, Playing }
@@ -38,6 +39,7 @@ public class NetworkManager : MonoBehaviour
 	void Start ()
 	{
 		
+		debugLog = GameObject.FindGameObjectWithTag ( "DebugLog" ).GetComponent<DebugLog>();
 		deckManager = GameObject.FindGameObjectWithTag ( "Manager" ).GetComponent<DeckManager> ();
 		
 		connectionType = ConnectionType.None;
@@ -47,11 +49,11 @@ public class NetworkManager : MonoBehaviour
 	public bool SetupHost ( string port )
 	{
 		
-		UnityEngine.Debug.Log ( "\tSetting Up Server on " + port );
+		debugLog.ReceiveMessage ( "\tSetting Up Server on " + port );
 		
 		hosting = true;
 		connectionType = ConnectionType.Hosting;
-		UnityEngine.Debug.Log ( "\tConnection Type Set to Hosting" );
+		debugLog.ReceiveMessage ( "\tConnection Type Set to Hosting" );
 		
 		return true;
 	}
@@ -69,7 +71,7 @@ public class NetworkManager : MonoBehaviour
 		hosting = false;
 		connectionType = ConnectionType.None;
 		
-		UnityEngine.Debug.Log ( "\tConnection Type Set to None" );
+		debugLog.ReceiveMessage ( "\tConnection Type Set to None" );
 		
 		return true;
 	}
@@ -91,10 +93,10 @@ public class NetworkManager : MonoBehaviour
 				
 				connectionType = ConnectionType.Connected;
 				
-				UnityEngine.Debug.Log ( "\nConnection Received" );
-				UnityEngine.Debug.Log ( "\t" + opponent.name );
+				debugLog.ReceiveMessage ( "\nConnection Received" );
+				debugLog.ReceiveMessage ( "\t" + opponent.name );
 				
-				UnityEngine.Debug.Log ( "\tConnection Type Set to Connected" );
+				debugLog.ReceiveMessage ( "\tConnection Type Set to Connected" );
 			}
 		}
 	}
@@ -103,7 +105,7 @@ public class NetworkManager : MonoBehaviour
 	public void DisconnectOpponent ()
 	{
 		
-		UnityEngine.Debug.Log ( "\nOpponent Disconnected" );
+		debugLog.ReceiveMessage ( "\nOpponent Disconnected" );
 		
 		opponent.name = null;
 		
@@ -113,14 +115,14 @@ public class NetworkManager : MonoBehaviour
 		hosting = true;
 		connectionType = ConnectionType.Hosting;
 		
-		UnityEngine.Debug.Log ( "\tConnection Type Reset" );
+		debugLog.ReceiveMessage ( "\tConnection Type Reset" );
 	}
 	
 	
 	public bool BootOpponent ()
 	{
 		
-		UnityEngine.Debug.Log ( "\tSending Disconnect Instruct" );
+		debugLog.ReceiveMessage ( "\tSending Disconnect Instruct" );
 		
 		//Send Message Here
 		

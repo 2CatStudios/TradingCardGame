@@ -51,19 +51,19 @@ public class ExternalInformation : MonoBehaviour
 		{
 			
 			path = macPath;
-			UnityEngine.Debug.Log ( "Client running on Mac OS" );
+			debugLog.debugLog.Add ( "Client running on Mac OS" );
 		} else {
 			
 			path = windowsPath;
-			UnityEngine.Debug.Log ( "Client running on Windows OS" );
+			debugLog.debugLog.Add ( "Client running on Windows OS" );
 		}
 		
 		gameCardsPath = path + "Cards" + Path.DirectorySeparatorChar + "GameCards" + Path.DirectorySeparatorChar;
 		supportCardsPath = path + "Cards" + Path.DirectorySeparatorChar + "SupportCards" + Path.DirectorySeparatorChar;
 		
-		UnityEngine.Debug.Log ( "Application Size: " + Screen.width + " x " + Screen.height );
-		UnityEngine.Debug.Log ( "Screen Size: " + Screen.currentResolution.width + " x " + Screen.currentResolution.height );
-		UnityEngine.Debug.Log ( "Refresh Rate (0 if not Obtainable): " + Screen.currentResolution.refreshRate );
+		debugLog.debugLog.Add ( "Application Size: " + Screen.width + " x " + Screen.height );
+		debugLog.debugLog.Add ( "Screen Size: " + Screen.currentResolution.width + " x " + Screen.currentResolution.height );
+		debugLog.debugLog.Add ( "Refresh Rate (0 if not Obtainable): " + Screen.currentResolution.refreshRate );
 		
 		
 		Thread setupLocalDirectoriesThread = new Thread ( new ThreadStart ( SetupLocalDirectories ));
@@ -85,7 +85,7 @@ public class ExternalInformation : MonoBehaviour
 				if ( cards == true )
 				{
 					
-					UnityEngine.Debug.Log ( "\nStartup Completed" );
+					debugLog.debugLog.Add ( "\nStartup Completed" );
 	
 					startup = false;
 					yield break;
@@ -94,7 +94,7 @@ public class ExternalInformation : MonoBehaviour
 					if ( loadCardImages == true )
 					{
 						
-						UnityEngine.Debug.Log ( "\nCreating Deck" );
+						debugLog.debugLog.Add ( "\nCreating Deck" );
 
 						foreach ( SupportCard card in deckManager.masterDeck.supportCards )
 						{
@@ -118,7 +118,7 @@ public class ExternalInformation : MonoBehaviour
 							www.LoadImageIntoTexture( card.image );
 						}
 						
-						UnityEngine.Debug.Log ( "\tDeck Created" );
+						debugLog.debugLog.Add ( "\tDeck Created" );
 						cards = true;
 					}
 				}
