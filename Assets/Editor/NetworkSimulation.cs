@@ -24,7 +24,7 @@ public class NetworkSimulation : Editor
         if ( GUILayout.Button ( "Connect", GUILayout.Width ( 200 )))
         {
 			
-            networkManager.ReceiveConnection ( "SimulatedOpp" );
+            networkManager.ReceiveConnection ( "SimulatedOpp", "192.168.1.197" );
         }
 		GUILayout.FlexibleSpace ();
 		GUILayout.EndHorizontal ();

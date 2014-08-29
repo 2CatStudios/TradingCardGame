@@ -85,7 +85,7 @@ public class NetworkManager : MonoBehaviour
 	}
 	
 
-	public void ReceiveConnection ( string receivedOpponentName )
+	public void ReceiveConnection ( string receivedOpponentName, string receivedIPAddress )
 	{
 		
 		if ( hosting == true )
@@ -95,7 +95,7 @@ public class NetworkManager : MonoBehaviour
 			{
 				
 				opponent.name = receivedOpponentName;
-				opponent.ipAddress = ""; //ASSIGN IP
+				opponent.ipAddress = receivedIPAddress; //ASSIGN IP
 				opponent.cards = new List<GameCard> ();
 				
 				opponent.cards.Add ( deckManager.masterDeck.gameCards[0] );
@@ -152,16 +152,19 @@ public class NetworkManager : MonoBehaviour
 		if ( String.IsNullOrEmpty ( messageToSend.Trim ()) == false && messageToSend != "Chat Message" )
 		{
 			
+			string message = "[TCG]" + "\t" + preferencesManager.preferences.playerName + " [" + System.DateTime.Now.ToString ( "HH:mm" ) + "]\n" + messageToSend;
 			UdpClient udpClient = new UdpClient( opponent.ipAddress, Int32.Parse ( activePort ));
-			Byte[] sendBytes = Encoding.Unicode.GetBytes ( "[TCG]" + "\t" + preferencesManager.preferences.playerName + " [" + System.DateTime.Now.ToString ( "HH:mm" ) + "]\n" + messageToSend );
+			Byte[] sendBytes = Encoding.Unicode.GetBytes ( message );
 			try
 			{
 			
 		  		udpClient.Send ( sendBytes, sendBytes.Length );
+				chatMessages.Add ( message );
 			} catch ( Exception e )
 			{
 				
 				UnityEngine.Debug.Log ( e.ToString ());
+				chatMessages.Add ( "Unable to Send ChatMessage!" );
 			}
 		}
 	}
