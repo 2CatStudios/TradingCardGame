@@ -13,6 +13,7 @@ public class UserInterface : MonoBehaviour
 	LoadingImage loadingImage;
 	
 	public GUISkin guiSkin;
+	public GUISkin emptySkin;
 
 	internal Rect homePaneRect;
 	Rect controlWindowRect;
@@ -67,7 +68,6 @@ public class UserInterface : MonoBehaviour
 	
 	bool play = false;
 	bool hostSection = false;
-	string hostPort = "52531";
 	
 	bool directConnectSection = false;
 	string directIP = "192.168.1.1";
@@ -91,10 +91,14 @@ public class UserInterface : MonoBehaviour
 	Rect bottomRect;
 	Rect bottomActiveZone;
 	private float bottomRectVelocity = 0.0F;
+	private float chatRectVelocity = 0.0F;
 	
 	
 	bool fadeIN = false;
 	bool fadeOUT = false;
+	
+	
+	string chatMessage = "Chat Message";
 	
 	
 	void Start ()
@@ -112,7 +116,7 @@ public class UserInterface : MonoBehaviour
 		homePaneRect = new Rect ( 0, 0, Screen.width, Screen.height );
 		controlWindowRect = new Rect ( Screen.width/2 - 386, 204, 772, 360 );
 		gameWindowRect = new Rect ( 0, 0, Screen.width, Screen.height );
-		chatWindowRect = new Rect ( Screen.width - 295, 150, 300, Screen.height/2 );
+		chatWindowRect = new Rect ( Screen.width - 300, 150, 305, Screen.height/2 );
 		
 		bottomRect = new Rect ( 10, Screen.height - 300, Screen.width - 20, 300 );
 		bottomActiveZone = new Rect ( 0, 0, Screen.width, 280 );
@@ -246,11 +250,11 @@ public class UserInterface : MonoBehaviour
 		windowStyle.onNormal.background = guiSkin.customStyles[0].hover.background;
 		
 		emptyStyle = new GUIStyle ();
-		/*emptyStyle.fontSize = 48;
+		emptyStyle.fontSize = 48;
 		emptyStyle.alignment = TextAnchor.MiddleLeft;
 		emptyStyle.border = new RectOffset ( 6, 6, 6, 4 );
 		emptyStyle.padding = new RectOffset ( 6, 6, 3, 3 );
-		emptyStyle.margin = new RectOffset ( 4, 4, 4, 4 )*/
+		emptyStyle.margin = new RectOffset ( 4, 4, 4, 4 );
 		
 		
 		hiddenCenterLargeStyle = new GUIStyle ();
@@ -405,7 +409,9 @@ public class UserInterface : MonoBehaviour
 			{
 				
 				float bottomRectYUp = Mathf.SmoothDamp ( bottomRect.y, Screen.height - 275, ref bottomRectVelocity, 0.05f );
+				float chatRectXOut = Mathf.SmoothDamp ( chatWindowRect.x, Screen.width - 300, ref chatRectVelocity, 0.05f );
 				bottomRect = new Rect ( 10, bottomRectYUp, Screen.width - 20, 300 );
+				chatWindowRect = new Rect ( chatRectXOut, 150, 305, Screen.height/2 );
 			}
 			
 			fieldCardStyle = emptyStyle;
@@ -416,7 +422,9 @@ public class UserInterface : MonoBehaviour
 			{
 				
 				float bottomRectYDown = Mathf.SmoothDamp ( bottomRect.y, Screen.height - 100, ref bottomRectVelocity, 0.05f );
+				float chatRectXOut = Mathf.SmoothDamp ( chatWindowRect.x, Screen.width - 10, ref chatRectVelocity, 0.05f );
 				bottomRect = new Rect ( 10, bottomRectYDown, Screen.width - 20, 300 );
+				chatWindowRect = new Rect ( chatRectXOut, 150, 305, Screen.height/2 );
 			}
 			
 			fieldCardStyle = cardBlueStyle;
@@ -646,12 +654,12 @@ public class UserInterface : MonoBehaviour
 			GUILayout.BeginHorizontal ();
 			GUILayout.FlexibleSpace ();
 			GUILayout.Label ( "Host Match on: ", labelLeftMediumStyle );
-			hostPort = GUILayout.TextField ( hostPort, 5, textFieldStyle );
+			networkManager.activePort = GUILayout.TextField ( networkManager.activePort, 5, textFieldStyle );
 			if ( GUILayout.Button ( "Host", buttonCenterSmallStyle ))
 			{
 				
 				debugLog.ReceiveMessage ( "\nInitializing Host" );
-				if ( networkManager.SetupHost ( hostPort ))
+				if ( networkManager.SetupHost ())
 				{
 					
 					debugLog.ReceiveMessage ( "\tHosting Enabled Sucessfully" );
@@ -1048,13 +1056,19 @@ public class UserInterface : MonoBehaviour
 				
 			GUILayout.Label ( preferencesManager.preferences.playerName, labelLeftLargeStyle );
 			GUILayout.Label ( "1000/1000 HP", labelLeftMediumStyle );
-				
-			GUILayout.Label ( "", labelLeftSmallStyle );
 			
 			if ( preferencesManager.preferences.allowChat != "False" )
 			{
 				
-				GUILayout.Button ( "Send Message", buttonCenterMediumStyle );
+				chatMessage = GUILayout.TextField ( chatMessage, textFieldStyle );
+				if ( GUILayout.Button ( "Send Message", buttonCenterMediumStyle ))
+				{
+					
+					networkManager.SendChatMessage ( chatMessage );
+				}
+			} else {
+				
+				GUILayout.Label ( "", labelLeftSmallStyle );
 			}
 			
 			GUILayout.Button ( "End Turn", buttonCenterMediumStyle );
@@ -1084,18 +1098,23 @@ public class UserInterface : MonoBehaviour
 	void ChatWindow ( int windowID ) // Window 6
 	{
 		
+		GUI.skin = emptySkin;
+		
+		GUILayout.BeginHorizontal ();
+		GUILayout.Space ( 5 );
 		GUILayout.BeginVertical ();
-		chatWindowScrollView = GUILayout.BeginScrollView ( chatWindowScrollView, GUILayout.Width ( 295 ));
+		chatWindowScrollView = GUILayout.BeginScrollView ( chatWindowScrollView, false, false, GUILayout.Width ( 298 ));
 		
 		int chatMessageIndex = 0;
 		while ( chatMessageIndex < networkManager.chatMessages.Count )
 		{
 			    	
-			GUILayout.Label ( networkManager.chatMessages[chatMessageIndex] + "\n", labelLeftSmallStyle );
+			GUILayout.Label ( networkManager.chatMessages[chatMessageIndex], labelLeftSmallStyle );
 			chatMessageIndex += 1;
 		}
 		
 		GUILayout.EndScrollView ();
 		GUILayout.EndVertical ();
+		GUILayout.EndHorizontal ();
 	}
 }

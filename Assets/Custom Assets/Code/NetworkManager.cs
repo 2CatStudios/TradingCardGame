@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using System.Text;
 using System.Net.Sockets;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ public class Opponent
 	public bool connected = false;
 	
 	public string name;
+	public string ipAddress;
 	
 	public List<GameCard> cards = new List<GameCard> ();
 }
@@ -19,6 +21,7 @@ public class NetworkManager : MonoBehaviour
 {
 	
 	DebugLog debugLog;
+	PreferencesManager preferencesManager;
 	DeckManager deckManager;
 	UserInterface userInterface;
 	
@@ -26,6 +29,7 @@ public class NetworkManager : MonoBehaviour
 	internal ConnectionType connectionType;
 	
 	internal bool hosting = false;
+	internal string activePort = "52531";
 	
 	internal bool info = false;
 	internal string infoString = "";
@@ -42,6 +46,7 @@ public class NetworkManager : MonoBehaviour
 	{
 		
 		debugLog = GameObject.FindGameObjectWithTag ( "DebugLog" ).GetComponent<DebugLog>();
+		preferencesManager = GameObject.FindGameObjectWithTag ( "Manager" ).GetComponent<PreferencesManager>();
 		deckManager = GameObject.FindGameObjectWithTag ( "Manager" ).GetComponent<DeckManager>();
 		userInterface = GameObject.FindGameObjectWithTag ( "UserInterface" ).GetComponent<UserInterface>();
 		
@@ -49,10 +54,10 @@ public class NetworkManager : MonoBehaviour
 	}
 
 
-	public bool SetupHost ( string port )
+	public bool SetupHost ()
 	{
 		
-		debugLog.ReceiveMessage ( "\tSetting Up Server on " + port );
+		debugLog.ReceiveMessage ( "\tSetting Up Server on " + activePort );
 		
 		hosting = true;
 		connectionType = ConnectionType.Hosting;
@@ -90,6 +95,7 @@ public class NetworkManager : MonoBehaviour
 			{
 				
 				opponent.name = receivedOpponentName;
+				opponent.ipAddress = ""; //ASSIGN IP
 				opponent.cards = new List<GameCard> ();
 				
 				opponent.cards.Add ( deckManager.masterDeck.gameCards[0] );
@@ -127,16 +133,36 @@ public class NetworkManager : MonoBehaviour
 		
 		debugLog.ReceiveMessage ( "\tSending Disconnect Instruct" );
 		
-		//Send Message Here
 		
 		return true;
 	}
 	
 	
-	public void ReceiveMessage ( string receivedMessage )
+	public void ReceiveChatMessage ( string receivedMessage )
 	{
 		
 		chatMessages.Add ( receivedMessage );
 		userInterface.chatWindowScrollView.y = Mathf.Infinity;
+	}
+	
+	
+	public void SendChatMessage ( string messageToSend )
+	{
+		
+		if ( String.IsNullOrEmpty ( messageToSend.Trim ()) == false && messageToSend != "Chat Message" )
+		{
+			
+			UdpClient udpClient = new UdpClient( opponent.ipAddress, Int32.Parse ( activePort ));
+			Byte[] sendBytes = Encoding.Unicode.GetBytes ( "[TCG]" + "\t" + preferencesManager.preferences.playerName + " [" + System.DateTime.Now.ToString ( "HH:mm" ) + "]\n" + messageToSend );
+			try
+			{
+			
+		  		udpClient.Send ( sendBytes, sendBytes.Length );
+			} catch ( Exception e )
+			{
+				
+				UnityEngine.Debug.Log ( e.ToString ());
+			}
+		}
 	}
 }

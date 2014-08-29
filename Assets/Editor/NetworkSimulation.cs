@@ -43,7 +43,7 @@ public class NetworkSimulation : Editor
         if ( GUILayout.Button ( "Send ChatMessage", GUILayout.Width ( 200 )))
         {
 			
-            networkManager.ReceiveMessage ( /* preferencesManager.preferences.playerName */ "SimulatedOpp" + " [" + System.DateTime.Now.ToString ( "HH:mm" ) + "]: " + message );
+            networkManager.ReceiveChatMessage ( "\t" + /* preferencesManager.preferences.playerName */ "SimulatedOpp" + " [" + System.DateTime.Now.ToString ( "HH:mm" ) + "]\n" + message );
         }
 		
 		message = EditorGUILayout.TextField ( message );
