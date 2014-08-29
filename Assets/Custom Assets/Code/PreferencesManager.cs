@@ -8,6 +8,9 @@ public class Preferences
 	
 	[XmlElement ( "PlayerName" )]
 	public string playerName = "Ember";
+	
+	[XmlElement ( "AllowChat" )]
+	public string allowChat = "True";
 }
 
 
@@ -15,4 +18,5 @@ public class PreferencesManager : MonoBehaviour
 {
 
 	internal Preferences preferences = new Preferences ();
+	internal bool tempAllowChat = true;
 }

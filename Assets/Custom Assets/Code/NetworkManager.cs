@@ -20,6 +20,7 @@ public class NetworkManager : MonoBehaviour
 	
 	DebugLog debugLog;
 	DeckManager deckManager;
+	UserInterface userInterface;
 	
 	internal enum ConnectionType { None, Hosting, Connecting, Connected, Playing }
 	internal ConnectionType connectionType;
@@ -32,6 +33,7 @@ public class NetworkManager : MonoBehaviour
 	
 	internal Opponent opponent = new Opponent ();
 	
+	internal List<String> chatMessages = new List<String> ();
 	
 	internal bool options = false;
 	
@@ -40,7 +42,8 @@ public class NetworkManager : MonoBehaviour
 	{
 		
 		debugLog = GameObject.FindGameObjectWithTag ( "DebugLog" ).GetComponent<DebugLog>();
-		deckManager = GameObject.FindGameObjectWithTag ( "Manager" ).GetComponent<DeckManager> ();
+		deckManager = GameObject.FindGameObjectWithTag ( "Manager" ).GetComponent<DeckManager>();
+		userInterface = GameObject.FindGameObjectWithTag ( "UserInterface" ).GetComponent<UserInterface>();
 		
 		connectionType = ConnectionType.None;
 	}
@@ -127,5 +130,13 @@ public class NetworkManager : MonoBehaviour
 		//Send Message Here
 		
 		return true;
+	}
+	
+	
+	public void ReceiveMessage ( string receivedMessage )
+	{
+		
+		chatMessages.Add ( receivedMessage );
+		userInterface.chatWindowScrollView.y = Mathf.Infinity;
 	}
 }

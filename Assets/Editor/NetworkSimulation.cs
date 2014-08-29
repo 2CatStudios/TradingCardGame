@@ -7,6 +7,9 @@ using System.Collections;
 public class NetworkSimulation : Editor
 {
 	
+	string message = "";
+	
+	
     public override void OnInspectorGUI ()
     {
 		
@@ -34,5 +37,15 @@ public class NetworkSimulation : Editor
 		}
 		GUILayout.FlexibleSpace ();
 		GUILayout.EndHorizontal ();
+		
+		GUILayout.Space ( 10 );
+		
+        if ( GUILayout.Button ( "Send ChatMessage", GUILayout.Width ( 200 )))
+        {
+			
+            networkManager.ReceiveMessage ( /* preferencesManager.preferences.playerName */ "SimulatedOpp" + " [" + System.DateTime.Now.ToString ( "HH:mm" ) + "]: " + message );
+        }
+		
+		message = EditorGUILayout.TextField ( message );
     }
 }

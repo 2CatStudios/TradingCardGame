@@ -35,6 +35,8 @@ public class ExternalInformation : MonoBehaviour
 	
 	bool loadCardImages = false;
 	
+	internal bool error = false;
+	
 	void Start ()
 	{
 		
@@ -79,7 +81,7 @@ public class ExternalInformation : MonoBehaviour
 		while ( true )
 		{
 			
-			if ( localDirectories == true & savedServers == true & officialServers == true & masterDeck == true )
+			if ( error == false & localDirectories == true & savedServers == true & officialServers == true & masterDeck == true )
 			{
 				
 				if ( cards == true )
@@ -283,6 +285,7 @@ public class ExternalInformation : MonoBehaviour
 		} catch ( Exception e )
 		{
 			
+			error = true;
 			UnityEngine.Debug.LogError ( "\tERROR: " + e );
 		}
 	}
@@ -353,6 +356,7 @@ public class ExternalInformation : MonoBehaviour
 			}
 		} catch ( Exception e ) {
 			
+			error = true;
 			debugLog.ReceiveMessage ( "\tERROR: " + e );
 		}
 		
@@ -387,6 +391,7 @@ public class ExternalInformation : MonoBehaviour
 			
 		} catch ( Exception e ) {
 			
+			error = true;
 			debugLog.ReceiveMessage ( "\tERROR: " + e );
 		}
 		
@@ -462,6 +467,7 @@ public class ExternalInformation : MonoBehaviour
 				} catch ( Exception e )
 				{
 					
+					error = true;
 					debugLog.ReceiveMessage ( "\t\tERROR: " + e );
 				}
 			} else {
@@ -523,6 +529,7 @@ public class ExternalInformation : MonoBehaviour
 				} catch ( Exception e )
 				{
 					
+					error = true;
 					debugLog.ReceiveMessage ( "\t\tERROR: " + e );
 				}
 			} else {
@@ -638,5 +645,7 @@ public class ExternalInformation : MonoBehaviour
 			
 			preferencesManager.preferences = xmlP.DeserializeXml<Preferences>();
 		}
+		
+		preferencesManager.tempAllowChat = Boolean.Parse ( preferencesManager.preferences.allowChat );
 	}
 }

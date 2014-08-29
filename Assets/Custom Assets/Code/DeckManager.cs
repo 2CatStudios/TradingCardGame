@@ -60,7 +60,7 @@ public class SupportCard
 	public GameCard ToGameCard ()
 	{
 		
-		return new GameCard ( cardVersion, name, "0", "0", new Action (), image );
+		return new GameCard ( "S", name, "0", "0", new Action (), image );
 	}
 }
 
@@ -84,7 +84,7 @@ public class GameCard
 	public GameCard () : this ( "", "", "", "", null, null ) {}
 	public GameCard ( string _cardIdentifier, string _name, string _hitPoints, string _focus, Action _action, Texture2D _image )
 	{
-
+		
 		this.cardIdentifier = _cardIdentifier;
 		this.name = _name;
 		this.hitPoints = _hitPoints;

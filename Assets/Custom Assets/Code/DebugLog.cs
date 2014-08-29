@@ -22,9 +22,6 @@ public class DebugLog : MonoBehaviour
 		{
 			
 			debugLog.Add ( "Debug Log: Active\n" );
-		} else {
-			
-			//Destroy ( gameObject );
 		}
 	}
 	
