@@ -14,6 +14,8 @@ public class ExternalInformation : MonoBehaviour
 	
 	public bool delayThreads = true;
 	
+	public float runningVersion = 0.0f;
+	
 	DebugLog debugLog;
 	DeckManager deckManager;
 	ServersManager serversManager;

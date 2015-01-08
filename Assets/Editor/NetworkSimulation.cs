@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 using System.Collections;
@@ -8,6 +9,7 @@ public class NetworkSimulation : Editor
 {
 	
 	string message = "";
+	string version = "0.0";
 	
 	
     public override void OnInspectorGUI ()
@@ -19,33 +21,37 @@ public class NetworkSimulation : Editor
 		
 		GUILayout.Space ( 10 );
 		GUILayout.Label ( "Simulate Opponent" );
+		GUILayout.Space ( 10 );
+		
+		GUILayout.Label ( "Version" );
+		GUILayout.BeginHorizontal ();
+		version = EditorGUILayout.TextField ( version );
+		GUILayout.FlexibleSpace ();
+		GUILayout.EndHorizontal ();
 		
 		GUILayout.BeginHorizontal ();
         if ( GUILayout.Button ( "Connect", GUILayout.Width ( 200 )))
         {
 			
-            networkManager.ReceiveConnection ( "SimulatedOpp", "192.168.1.197" );
+            networkManager.ReceiveConnection ( float.Parse ( version ), "SimulatedOpp" );
         }
-		GUILayout.FlexibleSpace ();
-		GUILayout.EndHorizontal ();
 		
-		GUILayout.BeginHorizontal ();
 		if ( GUILayout.Button ( "Disconnect", GUILayout.Width ( 200 )))
 		{
 			
 			networkManager.DisconnectOpponent ();
 		}
-		GUILayout.FlexibleSpace ();
 		GUILayout.EndHorizontal ();
-		
 		GUILayout.Space ( 10 );
 		
-        if ( GUILayout.Button ( "Send ChatMessage", GUILayout.Width ( 200 )))
+		GUILayout.BeginHorizontal ();
+		message = EditorGUILayout.TextField ( message );
+		
+        if ( GUILayout.Button ( "Send ChatMessage" ))
         {
 			
-            networkManager.ReceiveChatMessage ( "\t" + /* preferencesManager.preferences.playerName */ "SimulatedOpp" + " [" + System.DateTime.Now.ToString ( "HH:mm" ) + "]\n" + message );
-        }
-		
-		message = EditorGUILayout.TextField ( message );
-    }
+            networkManager.ReceiveChatMessage ( "[2CatStudios_TCG]" + "\t" + "SimulatedOpp" + " [" + System.DateTime.Now.ToString ( "HH:mm" ) + "]\n" + message );
+		}
+    	GUILayout.EndHorizontal ();
+	}
 }

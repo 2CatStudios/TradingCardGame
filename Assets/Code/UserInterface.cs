@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Text.RegularExpressions;
 //Written by Michael Bethke
 public class UserInterface : MonoBehaviour
 {
@@ -99,6 +100,13 @@ public class UserInterface : MonoBehaviour
 	
 	
 	string chatMessage = "Chat Message";
+	
+	
+	public static string RemoveChar ( string uneditedString )
+	{
+			
+		return Regex.Replace ( uneditedString, "[^0-9.]", "" );
+	}
 	
 	
 	void Start ()
@@ -561,17 +569,23 @@ public class UserInterface : MonoBehaviour
 				if ( networkManager.connectionType == NetworkManager.ConnectionType.Playing )
 				{
 				
-					GUILayout.Window ( 5, gameWindowRect, GameWindow, "", emptyStyle );
+					GUILayout.Window ( 6, gameWindowRect, GameWindow, "", emptyStyle );
 					
 					if ( preferencesManager.preferences.allowChat != "False" )
 					{
 						
-						GUI.Window ( 6, chatWindowRect, ChatWindow, "", windowStyle );
+						GUI.Window ( 7, chatWindowRect, ChatWindow, "", windowStyle );
 					}
 				} else {
 					
-					GUILayout.Window ( 4, controlWindowRect, HostingWindow, "", windowStyle );
+					GUILayout.Window ( 5, controlWindowRect, HostingWindow, "", windowStyle );
 				}
+			}
+			
+			if ( networkManager.connecting == true )
+			{
+				
+				
 			}
 		}
 		
@@ -631,7 +645,7 @@ public class UserInterface : MonoBehaviour
 	void PlayWindow ( int windowID ) // Window 2
 	{
 		
-		playWindowScrollView = GUILayout.BeginScrollView ( playWindowScrollView, GUILayout.Width ( controlWindowRect.width ), GUILayout.Height ( controlWindowRect.height ));
+		playWindowScrollView = GUILayout.BeginScrollView ( playWindowScrollView, false, false, GUILayout.Width ( controlWindowRect.width ), GUILayout.Height ( controlWindowRect.height ));
 		
 		GUILayout.BeginVertical ();
 		
@@ -672,43 +686,6 @@ public class UserInterface : MonoBehaviour
 			GUILayout.EndHorizontal ();
 		}
 		
-		GUILayout.Space ( 40 );
-		GUILayout.BeginHorizontal ();
-		GUILayout.Space ( 5 );
-		if ( GUILayout.Button ( "Direct Connection", hiddenCenterLargeStyle ))
-		{
-			
-			if ( directConnectSection == true )
-				directConnectSection = false;
-			else
-				directConnectSection = true;
-		}
-		GUILayout.EndHorizontal ();
-		
-		if ( directConnectSection == true )
-		{
-				
-			GUILayout.BeginHorizontal ();
-			GUILayout.FlexibleSpace ();
-			GUILayout.Label ( "Connect to: ", labelLeftMediumStyle );
-			directIP = GUILayout.TextField ( directIP, 22, textFieldStyle, GUILayout.MinWidth ( 120 ));
-			directPort = GUILayout.TextField ( directPort, 5, textFieldStyle, GUILayout.MinWidth ( 50 ));
-			directName = GUILayout.TextField ( directName, 22, textFieldStyle, GUILayout.MinWidth ( 100 ));
-			if ( GUILayout.Button ( "Save Server", buttonCenterSmallStyle ))
-			{
-				
-				debugLog.ReceiveMessage ( "\nSaving Server [" + directIP + ", " + directPort + ", " + directName + "]" );
-				externalInformation.SaveServer ( directIP, directPort, directName );
-			}
-			if ( GUILayout.Button ( "Connect", buttonCenterSmallStyle ))
-			{
-				
-/*				Connect to IP	*/
-			}
-			GUILayout.FlexibleSpace ();
-			GUILayout.EndHorizontal ();
-		}
-
 		
 		GUILayout.Space ( 40 );
 		GUILayout.BeginHorizontal ();
@@ -735,6 +712,44 @@ public class UserInterface : MonoBehaviour
 /*					Connect to Official Server	*/					
 				}
 			}
+		}
+		
+		
+		GUILayout.Space ( 40 );
+		GUILayout.BeginHorizontal ();
+		GUILayout.Space ( 5 );
+		if ( GUILayout.Button ( "Direct Connection", hiddenCenterLargeStyle ))
+		{
+			
+			if ( directConnectSection == true )
+				directConnectSection = false;
+			else
+				directConnectSection = true;
+		}
+		GUILayout.EndHorizontal ();
+		
+		if ( directConnectSection == true )
+		{
+				
+			GUILayout.BeginHorizontal ();
+			GUILayout.FlexibleSpace ();
+			GUILayout.Label ( "Connect to: ", labelLeftMediumStyle );
+			directIP = GUILayout.TextField ( RemoveChar ( directIP ), 22, textFieldStyle, GUILayout.MinWidth ( 120 ));
+			directPort = GUILayout.TextField ( RemoveChar ( directPort ), 5, textFieldStyle, GUILayout.MinWidth ( 50 ));
+			directName = GUILayout.TextField ( directName, 22, textFieldStyle, GUILayout.MinWidth ( 105 ));
+			if ( GUILayout.Button ( "Save Server", buttonCenterSmallStyle ))
+			{
+				
+				debugLog.ReceiveMessage ( "\nSaving Server [" + directIP + ", " + directPort + ", " + directName + "]" );
+				externalInformation.SaveServer ( directIP, directPort, directName );
+			}
+			if ( GUILayout.Button ( "Connect", buttonCenterSmallStyle ))
+			{
+				
+				networkManager.AttemptConnection ( directIP, directPort );
+			}
+			GUILayout.FlexibleSpace ();
+			GUILayout.EndHorizontal ();
 		}
 		
 		
@@ -833,7 +848,14 @@ public class UserInterface : MonoBehaviour
 	}
 	
 	
-	void HostingWindow ( int windowID ) // Window 4
+	void ConnectingWindow ( int windowID ) // Window 4
+	{
+		
+		
+	}
+	
+	
+	void HostingWindow ( int windowID ) // Window 5
 	{
 		
 		GUILayout.BeginVertical ();
@@ -876,6 +898,7 @@ public class UserInterface : MonoBehaviour
 						
 						deckManager.SetupDecks ();
 						networkManager.connectionType = NetworkManager.ConnectionType.Playing;
+						networkManager.BrodcastChatMessage ( "Match between " + preferencesManager.preferences.playerName + " and " + networkManager.opponent.name + " started at " + System.DateTime.Now.ToString ( "HH:mm" ) + "!" );
 					}
 					
 					GUILayout.Space ( 5 );
@@ -943,7 +966,7 @@ public class UserInterface : MonoBehaviour
 	}
 	
 	
-	void GameWindow ( int windowID ) // Window 5
+	void GameWindow ( int windowID ) // Window 6
 	{
 		
 		GUI.skin = guiSkin;
@@ -1057,21 +1080,26 @@ public class UserInterface : MonoBehaviour
 			GUILayout.Label ( preferencesManager.preferences.playerName, labelLeftLargeStyle );
 			GUILayout.Label ( "1000/1000 HP", labelLeftMediumStyle );
 			
-			if ( preferencesManager.preferences.allowChat != "False" )
+			if ( preferencesManager.preferences.allowChat == "True" )
 			{
 				
-				chatMessage = GUILayout.TextField ( chatMessage, textFieldStyle );
-				if ( GUILayout.Button ( "Send Message", buttonCenterMediumStyle ))
+				chatMessage = GUILayout.TextField ( chatMessage, textFieldStyle, GUILayout.Width ( 166 ));
+				if ( GUILayout.Button ( "Send Message", buttonCenterMediumStyle ) || Event.current.keyCode == KeyCode.Return )
 				{
 					
 					networkManager.SendChatMessage ( chatMessage );
+					chatMessage = "";
 				}
 			} else {
 				
 				GUILayout.Label ( "", labelLeftSmallStyle );
 			}
 			
-			GUILayout.Button ( "End Turn", buttonCenterMediumStyle );
+			if ( GUILayout.Button ( "End Turn", buttonCenterMediumStyle ))
+			{
+				
+				networkManager.EndTurn ();
+			}
 			
 			GUILayout.Label ( "", labelLeftSmallStyle );
 			
@@ -1095,7 +1123,7 @@ public class UserInterface : MonoBehaviour
 	}
 	
 	
-	void ChatWindow ( int windowID ) // Window 6
+	void ChatWindow ( int windowID ) // Window 7
 	{
 		
 		GUI.skin = emptySkin;
@@ -1116,5 +1144,7 @@ public class UserInterface : MonoBehaviour
 		GUILayout.EndScrollView ();
 		GUILayout.EndVertical ();
 		GUILayout.EndHorizontal ();
+		
+		chatWindowScrollView.y = Mathf.Infinity;
 	}
 }

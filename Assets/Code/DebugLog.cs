@@ -30,6 +30,7 @@ public class DebugLog : MonoBehaviour
 	{
 		
 		debugLog.Add ( logString + " (Log)" );
+		userInterface.debugScrollPosition.y = Mathf.Infinity;
 	}
 	
 	
