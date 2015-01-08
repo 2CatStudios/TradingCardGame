@@ -709,7 +709,8 @@ public class UserInterface : MonoBehaviour
 				if ( GUILayout.Button ( officialServer.name, buttonLeftMediumStyle ))
 				{
 					
-/*					Connect to Official Server	*/					
+/*					Connect to Official Server	*/		
+					networkManager.AttemptConnection ( officialServer.ipaddress, officialServer.port );			
 				}
 			}
 		}
