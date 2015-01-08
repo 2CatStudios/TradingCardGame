@@ -27,6 +27,16 @@ class ConnectionInfo
 }
 
 
+public class StateObject
+{
+	
+    public Socket workSocket = null;
+    public const int bufferSize = 256;
+    public byte[] buffer = new byte[bufferSize];
+    public StringBuilder stringBuilder = new StringBuilder ();
+}
+
+
 public class NetworkManager : MonoBehaviour
 {
 	
@@ -54,6 +64,8 @@ public class NetworkManager : MonoBehaviour
 	internal Opponent opponent = new Opponent ();
 	
 	internal List<String> chatMessages = new List<String> ();
+	
+	private static String response = String.Empty;
 	
 	internal bool options = false;
 	
@@ -270,33 +282,131 @@ public class NetworkManager : MonoBehaviour
 	}
 	
 	
-	public void AttemptConnection ( string ipAddress, string port )
+	public void AttemptConnection ( string ipAddressString, string portString )
 	{
 		
-		debugLog.ReceiveMessage ( "\tAttempting Connection to " + ipAddress + " on " + port );
+		debugLog.ReceiveMessage ( "\tAttempting Connection to " + ipAddressString + " on " + portString );
 		
 		connecting = true;
 		connectionType = ConnectionType.Connecting;
 		debugLog.ReceiveMessage ( "\tConnection Type Set to Connecting" );
 		
-		/*UdpClient udpClient = new UdpClient( ipAddress, Int32.Parse ( port ));
-		Byte[] sendBytes = Encoding.Unicode.GetBytes ( "[2CatStudios_TCG]" + ";" + "SYSTEMMESSAGE" + ";" + "INITIALCONNECTION" + ";" + externalInformation.runningVersion + ";" + preferencesManager.preferences.playerName );
 		try
 		{
-		
-	  		udpClient.Send ( sendBytes, sendBytes.Length );
-		} catch ( Exception e )
+			
+			IPAddress ipAddress = Dns.GetHostEntry ( ipAddressString ).AddressList[0];
+			IPEndPoint remoteEndPoint = new IPEndPoint ( ipAddress, Convert.ToInt16 ( portString ));
+			
+			Socket client = new Socket ( AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp );
+			
+			client.BeginConnect ( remoteEndPoint, new AsyncCallback ( ConnectCallback ), client );
+			
+			Send ( client, "This is a test<EOF>" );
+			
+			Receive ( client );
+			
+			UnityEngine.Debug.Log ( "Response received : " + response );
+
+			client.Shutdown ( SocketShutdown.Both );
+			client.Close ();
+		} catch ( Exception connectionError )
 		{
 			
-			UnityEngine.Debug.Log ( e.ToString ());
-		}*/
+			UnityEngine.Debug.LogError ( connectionError );
+		}
 	}
 	
 	
-	void ConnectionSuccess ()
+	private static void ConnectCallback ( IAsyncResult callback )
 	{
 		
+		try
+		{
+			
+		    Socket client = ( Socket ) callback.AsyncState;
+		    client.EndConnect ( callback );
+    	
+		    UnityEngine.Debug.Log ( "Socket connected to " + client.RemoteEndPoint.ToString ());
+		} catch ( Exception connectionError )
+		{
+			
+		    UnityEngine.Debug.LogError ( connectionError );
+		}
+	}
+	
+	
+	private static void Receive ( Socket client )
+	{
+		try
+		{
+			
+    		StateObject state = new StateObject ();
+			state.workSocket = client;
+			
+			client.BeginReceive ( state.buffer, 0, StateObject.bufferSize, 0, new AsyncCallback ( ClientReceiveCallback ), state );
+		} catch ( Exception error )
+		{
+			
+    		UnityEngine.Debug.LogError ( error );
+		}
+	}
+	
+	
+	private static void ClientReceiveCallback ( IAsyncResult callback )
+	{
+		try
+		{
+
+		    StateObject state = ( StateObject ) callback.AsyncState;
+		    Socket client = state.workSocket;
+    	
+		    int bytesRead = client.EndReceive ( callback );
+    	
+		    if ( bytesRead > 0 )
+			{
+				
+				state.stringBuilder.Append ( Encoding.ASCII.GetString ( state.buffer, 0, bytesRead ));
+    	
+		        client.BeginReceive ( state.buffer, 0, StateObject.bufferSize, 0, new AsyncCallback ( ClientReceiveCallback ), state );
+		    } else {
+				
+		        if ( state.stringBuilder.Length > 1 )
+				{
+					
+		            response = state.stringBuilder.ToString ();
+		        }
+			}
+		} catch ( Exception error )
+		{
+			
+			UnityEngine.Debug.LogError ( error );
+		}
+	}
+	
+	
+	private static void Send ( Socket client, String data )
+	{
+	
+		byte[] byteData = Encoding.ASCII.GetBytes(data);
+		client.BeginSend ( byteData, 0, byteData.Length, 0, new AsyncCallback ( ClientSendCallback ), client );
+	}
+	
+	
+	private static void ClientSendCallback ( IAsyncResult callback )
+	{
+	
+		try
+		{
 		
+			Socket client = ( Socket ) callback.AsyncState;
+			int bytesSent = client.EndSend ( callback );
+			UnityEngine.Debug.Log ( "Sent " + bytesSent + " to server." );
+		
+		} catch ( Exception callbackError )
+		{
+			
+	    	UnityEngine.Debug.LogError ( callbackError );
+		}
 	}
 	
 	
