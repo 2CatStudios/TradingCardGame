@@ -295,7 +295,7 @@ public class NetworkManager : MonoBehaviour
 		{
 			
 			IPAddress ipAddress = Dns.GetHostEntry ( ipAddressString ).AddressList[0];
-			IPEndPoint remoteEndPoint = new IPEndPoint ( ipAddress, Convert.ToInt16 ( portString ));
+			IPEndPoint remoteEndPoint = new IPEndPoint ( ipAddress, Convert.ToInt32 ( portString ));
 			
 			Socket client = new Socket ( AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp );
 			
