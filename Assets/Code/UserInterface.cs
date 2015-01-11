@@ -710,7 +710,7 @@ public class UserInterface : MonoBehaviour
 				{
 					
 /*					Connect to Official Server	*/		
-					networkManager.AttemptConnection ( officialServer.ipaddress, officialServer.port );			
+					networkManager.AttemptConnection ( officialServer.ipaddress, officialServer.port );
 				}
 			}
 		}
@@ -780,7 +780,8 @@ public class UserInterface : MonoBehaviour
 					if ( GUILayout.Button ( savedServer.name, buttonLeftMediumStyle ))
 					{
 						
-/*						Connect to Saved Server	*/						
+/*						Connect to Saved Server	*/
+						networkManager.AttemptConnection ( savedServer.ipaddress, savedServer.port );	
 					}
 					
 					if ( GUILayout.Button ( "Delete", buttonCenterMediumStyle, GUILayout.Width ( 100 )))
